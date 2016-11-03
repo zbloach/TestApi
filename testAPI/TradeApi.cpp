@@ -330,6 +330,7 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 	stockprice = { "", 0, 0, 0, v_prices0 };
 	string S_info = "";
 	int error_num = 0, sleeptime = 0;
+	vector<string> v_info;
 	do 
 	{
 		if (error_num > 0)
@@ -352,10 +353,9 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 			cout << stock_id << ":没有价格信息" << endl;
 			return false;
 		}
-	} while (S_info.length() < 100);
+		v_info = Toolkit::T_split(S_info, "|");
+	} while (v_info.size() < 37);
 	
-
-	vector<string> v_info = Toolkit::T_split(S_info, "|");
 	vector<double> v_price;
 
 	//清空价格向量元素
