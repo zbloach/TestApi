@@ -457,9 +457,9 @@ int main()
 	//最大持仓股票数目
 	int positionNum = 10;
 	//一次交易金额
-	int ExgValue = 8000;
+	int ExgValue = 21000;
 	//每次交易间隔时间  单位秒
-	int ExgPerSeconds = 60;
+	int ExgPerSeconds = 90;
 
 	Sleep(2000);
 
