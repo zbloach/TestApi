@@ -348,7 +348,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								return false;
 							}
 							//9代表买5位置，0代表的价格，1代表数量
-							//tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
+							tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
 							cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股"<< endl;;
 							//not_exg_num = tdApi.QueryIsExgByid(vtbh);
 							//error_time++;
@@ -380,7 +380,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								return false;
 							}
 							//0代表卖5位置，0代表的价格，1代表数量
-							//tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
+							tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
 							cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
 							//not_exg_num = tdApi.QueryIsExgByid(vtbh);
 							//error_time++;
@@ -483,24 +483,26 @@ int main()
 	tapi_1.~testAPI();
 	
 	
-	/*
-	//操作第一个账户
-	testAPI tapi(selectedIP, iter->second, "", "0", "309719208370", "651086");
-	vector<string> sell_list, buy_list;
-	tapi.readExgList("D:\\ExgFile\\ExgFile_1.txt", buy_list, sell_list);
-	map<string, int> m_buy_list,m_sell_list;
-	tapi.ComputeBuyStockNum(positionNum, buy_list, m_buy_list);
-	tapi.ComputeSellStockNum(sell_list, m_sell_list);
-	map<string, vector<int>> map_v_buy,map_v_sell;
-	map_v_buy = tapi.ComputeBuyPerMin(m_buy_list, ExgValue);
-	map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
 	
-	tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
+	//操作第一个账户
+	testAPI tapi;
+	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
+	if (result_1)
+	{
+		vector<string> sell_list, buy_list;
+		tapi.readExgList("D:\\ExgFile\\ExgFile_1.txt", buy_list, sell_list);
+		map<string, int> m_buy_list, m_sell_list;
+		tapi.ComputeBuyStockNum(positionNum, buy_list, m_buy_list);
+		tapi.ComputeSellStockNum(sell_list, m_sell_list);
+		map<string, vector<int>> map_v_buy, map_v_sell;
+		map_v_buy = tapi.ComputeBuyPerMin(m_buy_list, ExgValue);
+		map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
+
+		tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
+	}
 	//析构
 	tapi.~testAPI();
-	*/
-	
-	
+
 
 	return 0;
 }
