@@ -109,7 +109,7 @@ std::string Toolkit::T_selectIp(vector<string> v_ip)
 			strcpy(tempchar, v_ip[i].c_str());
 			objPing.Ping(tempchar, &reply);
 			printf("Reply from %s: bytes=%d time=%ldms TTL=%ld\n", tempchar, reply.m_dwBytes, reply.m_dwRoundTripTime, reply.m_dwTTL);
-			if (reply.m_dwRoundTripTime < minTime && reply.m_dwRoundTripTime > 0)
+			if (reply.m_dwRoundTripTime < minTime && reply.m_dwRoundTripTime >= 0)
 			{
 				minTime = reply.m_dwRoundTripTime;
 				selectedIp = v_ip[i];
