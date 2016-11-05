@@ -23,7 +23,7 @@ bool TradeApi::Login(string userid, string password)
 		}
 		if (m_userinfo.userid == "309719208370")
 		{
-			result = tradespi->JL_Login(m_serverinfo.ip.c_str(), m_serverinfo.trade_server_port, userid.c_str(),
+			result = tradespi->JL_Login_0(m_serverinfo.ip.c_str(), m_serverinfo.trade_server_port, userid.c_str(),
 				password.c_str(), m_serverinfo.commu_key.c_str(), m_serverinfo.depart_code.c_str());
 		}
 		if (m_userinfo.userid == "309219037550")
@@ -72,7 +72,7 @@ bool TradeApi::QueryAccountMoney(struct AccountInfo& ac_info)
 
 		if (m_userinfo.userid == "309719208370")
 		{
-			info = tradespi->JL_QueryData(m_userinfo.userid.c_str(), accountInfo_id);
+			info = tradespi->JL_QueryData_0(m_userinfo.userid.c_str(), accountInfo_id);
 		}
 		if (m_userinfo.userid == "309219037550")
 		{
@@ -108,7 +108,7 @@ bool TradeApi::QueryShareholderCode()
 	char* info = NULL;
 	if (m_userinfo.userid == "309719208370")
 	{
-		info = tradespi->JL_QueryData(m_userinfo.userid.c_str(), ShareholderCode_id);
+		info = tradespi->JL_QueryData_0(m_userinfo.userid.c_str(), ShareholderCode_id);
 	}
 	if (m_userinfo.userid == "309219037550")
 	{
@@ -132,7 +132,7 @@ bool TradeApi::QueryPosition(map<string, int>& stock_position)
 	char* info = NULL;
 	if (m_userinfo.userid == "309719208370")
 	{
-		info = tradespi->JL_QueryData(m_userinfo.userid.c_str(), Position_id);
+		info = tradespi->JL_QueryData_0(m_userinfo.userid.c_str(), Position_id);
 	}
 	
 	if (m_userinfo.userid == "309219037550")
@@ -175,7 +175,7 @@ bool TradeApi::QueryEntrust(vector<EnstrustInfo>& EntrustList)
 	string info;
 	if (m_userinfo.userid == "309719208370")
 	{
-		info = tradespi->JL_QueryData(m_userinfo.userid.c_str(), Ensturst_id);
+		info = tradespi->JL_QueryData_0(m_userinfo.userid.c_str(), Ensturst_id);
 	}
 	if (m_userinfo.userid == "309219037550")
 	{
@@ -266,7 +266,7 @@ bool TradeApi::buy_stock(string stock_id, int stock_num, double price, string& r
 
 	if (m_userinfo.userid == "309719208370")
 	{
-		result = tradespi->JL_SendOrder(0, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
+		result = tradespi->JL_SendOrder_0(0, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
 	}
 	if (m_userinfo.userid == "309219037550")
 	{
@@ -305,7 +305,7 @@ bool TradeApi::sell_stock(string stock_id, int stock_num, double price, string& 
 
 	if (m_userinfo.userid == "309719208370")
 	{
-		result = tradespi->JL_SendOrder(1, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
+		result = tradespi->JL_SendOrder_0(1, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
 	}
 	if (m_userinfo.userid == "309219037550")
 	{
@@ -341,7 +341,7 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 		}
 		if (m_userinfo.userid == "309719208370")
 		{
-			S_info = tradespi->JL_GetPrice(stock_id.c_str());
+			S_info = tradespi->JL_GetPrice_0(stock_id.c_str());
 		}
 		if (m_userinfo.userid == "309219037550")
 		{
@@ -416,7 +416,7 @@ bool TradeApi::cancel_order(string Entrustid)
 		string S_info;
 		if (m_userinfo.userid == "309719208370")
 		{
-			S_info = tradespi->JL_CancelOrder(m_userinfo.userid.c_str(), Entrustid.c_str(), jys);
+			S_info = tradespi->JL_CancelOrder_0(m_userinfo.userid.c_str(), Entrustid.c_str(), jys);
 		}
 		if (m_userinfo.userid == "309219037550")
 		{

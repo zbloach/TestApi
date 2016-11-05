@@ -19,7 +19,7 @@ bool testAPI::readExgList(string fileAdress, vector<string>& v_buy_list, vector<
 	v_sell_list.clear();
 	fstream f;
 	f.open(fileAdress.c_str(), ios::in);
-	cout << fileAdress.c_str() << endl;
+	cout <<"读取交易数据:"<< fileAdress.c_str() << endl;
 	if (f)
 	{
 		string s0,s2;
@@ -52,7 +52,7 @@ testAPI::~testAPI()
 	
 }
 //positionNum   股票只数
-bool testAPI::ComputeBuyStockNum(int positionNum,vector<string> v_buy_list,map<string , int>& m_buy_list)
+bool testAPI::ComputeBuyStockNum(double position,int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list)
 {
 	//计算买入数量
 	m_buy_list.clear();
@@ -64,7 +64,7 @@ bool testAPI::ComputeBuyStockNum(int positionNum,vector<string> v_buy_list,map<s
 	}
 	if (tdApi.QueryAccountMoney(acinfo))
 	{
-		double totalValue = acinfo.totalValue * 0.95;
+		double totalValue = acinfo.totalValue * 0.95 * position;
 		int i = 0;
 		StockPrice sp;
 		int stockNum;
@@ -461,20 +461,42 @@ int main()
 	int ExgValue = 21000;
 	//每次交易间隔时间  单位秒
 	int ExgPerSeconds = 50;
-
+	//交易仓位
+	double position = 1;
 	Sleep(2000);
+	bool result_1 = false;
+
+	//操作第一个账户
+	testAPI tapi;
+	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
+	if (result_1)
+	{
+		vector<string> sell_list, buy_list;
+		tapi.readExgList("D:\\ExgFile\\ExgFile.txt", buy_list, sell_list);
+		map<string, int> m_buy_list, m_sell_list;
+		tapi.ComputeBuyStockNum(position, positionNum, buy_list, m_buy_list);
+		tapi.ComputeSellStockNum(sell_list, m_sell_list);
+		map<string, vector<int>> map_v_buy, map_v_sell;
+		map_v_buy = tapi.ComputeBuyPerMin(m_buy_list, ExgValue);
+		map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
+
+		tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
+		cout << "309719208370" << "交易完成" << endl;
+	}
+	//析构
+	tapi.~testAPI();
 
 	//操作第二个账户
 	
 	testAPI tapi_1;
-	bool result_1 = tapi_1.Init(selectedIP, iter->second, "", "0", "309219037550", "651086");
+	result_1 = tapi_1.Init(selectedIP, iter->second, "", "0", "309219037550", "651086");
 	if (result_1)
 	{
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
-		tapi_1.readExgList("D:\\ExgFile\\ExgFile_1.txt", buy_list_1, sell_list_1);
+		tapi_1.readExgList("D:\\ExgFile\\ExgFile.txt", buy_list_1, sell_list_1);
 		map<string, int> m_buy_list_1, m_sell_list_1;
-		tapi_1.ComputeBuyStockNum(positionNum, buy_list_1, m_buy_list_1);
+		tapi_1.ComputeBuyStockNum(position,positionNum, buy_list_1, m_buy_list_1);
 		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list_1);
 		map<string, vector<int>> map_v_buy_1, map_v_sell_1;
 		map_v_buy_1 = tapi_1.ComputeBuyPerMin(m_buy_list_1, ExgValue);
@@ -486,25 +508,7 @@ int main()
 	
 	
 	
-	//操作第一个账户
-	testAPI tapi;
-	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
-	if (result_1)
-	{
-		vector<string> sell_list, buy_list;
-		tapi.readExgList("D:\\ExgFile\\ExgFile_1.txt", buy_list, sell_list);
-		map<string, int> m_buy_list, m_sell_list;
-		tapi.ComputeBuyStockNum(positionNum, buy_list, m_buy_list);
-		tapi.ComputeSellStockNum(sell_list, m_sell_list);
-		map<string, vector<int>> map_v_buy, map_v_sell;
-		map_v_buy = tapi.ComputeBuyPerMin(m_buy_list, ExgValue);
-		map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
-
-		tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
-		cout <<"309719208370"<< "交易完成" << endl;
-	}
-	//析构
-	tapi.~testAPI();
+	
 	
 	Sleep(3600000);
 	return 0;

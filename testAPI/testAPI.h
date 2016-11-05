@@ -20,10 +20,13 @@ public:
 	
 	//计算买卖股票的数量
 	//stockVolume持仓分成的分数
-	bool ComputeBuyStockNum(int positionNum,vector<string> v_buy_list,map<string,int>& m_buy_list);
+	//position 仓位  0.5  半仓，1 全仓
+	bool ComputeBuyStockNum(double position,int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list);
 	bool ComputeSellStockNum(vector<string> v_sell_list,map<string,int>& m_sell_list);
 	//perMin隔perNMin分钟交易一次,ExgNum交易次数
+	
 	bool ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num);
+	
 	map<string, vector<int>> ComputeBuyPerMin(map<string, int> m_buy_list, int ExgValue);
 	map<string, vector<int>> ComputeSellPerMin(map<string, int> m_sell_list, int ExgValue);
 	void test();
