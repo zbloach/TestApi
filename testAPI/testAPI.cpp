@@ -354,13 +354,14 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								cout << "卖出股票:" << sell_iter->first << "失败" << endl;
 								Sleep(3600000);
 							}
+							else
+								cout << "卖出股票:" << sell_iter->first << "成功" << endl;
 						}
 						//下一只股票
 						sell_iter++;
 					}
 
 					//遍历买入列表中的股票
-					//if (exg_ser < buy_size)
 					if (buy_iter != buy_list_num.end())
 					{
 						if (ser_num < buy_iter->second.size())
@@ -378,9 +379,11 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 							cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
 							if (tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh) == false)
 							{
-								cout << "买入股票:" << sell_iter->first << "失败" << endl;
+								cout << "买入股票:" << buy_iter->first << "失败" << endl;
 								Sleep(3600000);
-							}						
+							}
+							else
+								cout << "买入股票:" << buy_iter->first << "成功" << endl;
 							
 						}
 						//下一只股票
