@@ -31,6 +31,11 @@ bool TradeApi::Login(string userid, string password)
 			result = tradespi->JL_Login_1(m_serverinfo.ip.c_str(), m_serverinfo.trade_server_port, userid.c_str(),
 				password.c_str(), m_serverinfo.commu_key.c_str(), m_serverinfo.depart_code.c_str());
 		}
+		if (m_userinfo.userid == "309219088510")
+		{
+			result = tradespi->JL_Login_2(m_serverinfo.ip.c_str(), m_serverinfo.trade_server_port, userid.c_str(),
+				password.c_str(), m_serverinfo.commu_key.c_str(), m_serverinfo.depart_code.c_str());
+		}
 		error_num++;
 		if (error_num > 10)
 		{
@@ -78,6 +83,10 @@ bool TradeApi::QueryAccountMoney(struct AccountInfo& ac_info)
 		{
 			info = tradespi->JL_QueryData_1(m_userinfo.userid.c_str(), accountInfo_id);
 		}
+		if (m_userinfo.userid == "309219088510")
+		{
+			info = tradespi->JL_QueryData_2(m_userinfo.userid.c_str(), accountInfo_id);
+		}
 		if (error_num > 50)
 		{
 			cout<<m_userinfo.userid << ":账户资金查询失败,放弃查询" << endl;
@@ -114,6 +123,10 @@ bool TradeApi::QueryShareholderCode()
 	{
 		info = tradespi->JL_QueryData_1(m_userinfo.userid.c_str(), ShareholderCode_id);
 	}
+	if (m_userinfo.userid == "309219088510")
+	{
+		info = tradespi->JL_QueryData_2(m_userinfo.userid.c_str(), ShareholderCode_id);
+	}
 	if (strlen(info) != 0)
 	{
 		string S_info = info;
@@ -140,6 +153,10 @@ bool TradeApi::QueryPosition(map<string, int>& stock_position)
 		info = tradespi->JL_QueryData_1(m_userinfo.userid.c_str(), Position_id);
 	}
 
+	if (m_userinfo.userid == "309219088510")
+	{
+		info = tradespi->JL_QueryData_2(m_userinfo.userid.c_str(), Position_id);
+	}
 	if (strlen(info) != 0)
 	{
 		string S_info = info;
@@ -181,6 +198,10 @@ bool TradeApi::QueryEntrust(vector<EnstrustInfo>& EntrustList)
 	{
 		info = tradespi->JL_QueryData_1(m_userinfo.userid.c_str(), Ensturst_id);
 	} 
+	if (m_userinfo.userid == "309219088510")
+	{
+		info = tradespi->JL_QueryData_2(m_userinfo.userid.c_str(), Ensturst_id);
+	}
 
 	if (info.length() != 0)
 	{
@@ -273,6 +294,10 @@ bool TradeApi::buy_stock(string stock_id, int stock_num, double price, string& r
 	{
 		result = tradespi->JL_SendOrder_1(0, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
 	}
+	if (m_userinfo.userid == "309219088510")
+	{
+		result = tradespi->JL_SendOrder_2(0, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
+	}
 
 	bool b_res = Toolkit::T_isNum(result);
 	if (b_res)
@@ -312,6 +337,10 @@ bool TradeApi::sell_stock(string stock_id, int stock_num, double price, string& 
 	{
 		result = tradespi->JL_SendOrder_1(1, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
 	}
+	if (m_userinfo.userid == "309219088510")
+	{
+		result = tradespi->JL_SendOrder_2(1, m_userinfo.userid.c_str(), ShareholderCode.c_str(), stock_id.c_str(), stock_num, (float)price);
+	}
 
 	bool b_res = Toolkit::T_isNum(result);
 	if (b_res)
@@ -336,7 +365,13 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 	{
 		if (error_num > 0)
 		{
-			//this->Login(m_userinfo.userid, m_userinfo.password);
+			if (error_num == 20)
+			{
+				//重新登录，并且查询价格信息
+				Sleep(2000);
+				cout << "重新登录" << endl;
+				this->Login(m_userinfo.userid, m_userinfo.password);
+			}
 			cout << m_userinfo.userid << ":第" << error_num << "次重复查询:" << stock_id << "价格信息" << endl;
 			Sleep(sleeptime);
 		}
@@ -347,6 +382,10 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 		if (m_userinfo.userid == "309219037550")
 		{
 			S_info = tradespi->JL_GetPrice_1(stock_id.c_str());
+		}
+		if (m_userinfo.userid == "309219088510")
+		{
+			S_info = tradespi->JL_GetPrice_2(stock_id.c_str());
 		}
 		error_num++;
 		if (error_num >= 50)
@@ -423,7 +462,10 @@ bool TradeApi::cancel_order(string Entrustid)
 		{
 			S_info = tradespi->JL_CancelOrder_1(m_userinfo.userid.c_str(), Entrustid.c_str(), jys);
 		}
-
+		if (m_userinfo.userid == "309219088510")
+		{
+			S_info = tradespi->JL_CancelOrder_2(m_userinfo.userid.c_str(), Entrustid.c_str(), jys);
+		}
 		if (S_info == "ok")
 		{
 			//撤单成功

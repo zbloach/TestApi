@@ -340,28 +340,20 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 							//交易量初值
 							not_exg_num = sell_iter->second[ser_num];
 							error_time = 0;
-							//do
-							//{
 							//获取价格
 							if (!tdApi.get_price(sell_iter->first, sp))
 							{
+								Sleep(3600000);
 								return false;
 							}
 							//9代表买5位置，0代表的价格，1代表数量
-							bool re = false;
 							cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股" << endl;
 						
-							tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
-							
-							
-							//not_exg_num = tdApi.QueryIsExgByid(vtbh);
-							//error_time++;
-							//if (error_time > max_error_time)
-							//{
-							//	cout << sell_iter->first << ":交易出错" << endl;
-							//	return false;
-							//}
-							//} while (not_exg_num != 0);//假如委托没有成交，则重新下单
+							if (tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh) == false)
+							{
+								cout << "卖出股票:" << sell_iter->first << "失败" << endl;
+								Sleep(3600000);
+							}
 						}
 						//下一只股票
 						sell_iter++;
@@ -376,28 +368,20 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 							//交易量初值
 							not_exg_num = buy_iter->second[ser_num];
 							error_time = 0;
-							//do
-							//{
-							//获取价格
+
 							if (!tdApi.get_price(buy_iter->first, sp))
 							{
+								Sleep(3600000);
 								return false;
 							}
 							//0代表卖5位置，0代表的价格，1代表数量
 							cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
+							if (tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh) == false)
+							{
+								cout << "买入股票:" << sell_iter->first << "失败" << endl;
+								Sleep(3600000);
+							}						
 							
-							tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
-							
-							
-							//not_exg_num = tdApi.QueryIsExgByid(vtbh);
-							//error_time++;
-							//if (error_time > max_error_time)
-							//{
-							//	cout << sell_iter->first << ":交易出错" << endl;
-							//	return false;
-							//}
-							//} while (not_exg_num != 0);//假如委托没有成交，则重新下单
-
 						}
 						//下一只股票
 						buy_iter++;
@@ -495,6 +479,7 @@ int main()
 	*/
 	//操作第二个账户
 	
+	/*
 	testAPI tapi;
 	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
 	if (result_1)
@@ -513,8 +498,27 @@ int main()
 	}
 	//析构
 	tapi.~testAPI();
-
+	*/
 	
+	//操作第三个账户
+	testAPI tapi_2;
+	result_1 = tapi_2.Init(selectedIP, iter->second, "", "0", "309219088510", "651086");
+	if (result_1)
+	{
+		vector<string> sell_list, buy_list;
+		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
+		map<string, int> m_buy_list, m_sell_list;
+		tapi_2.ComputeBuyStockNum(position, positionNum, buy_list, m_buy_list);
+		tapi_2.ComputeSellStockNum(sell_list, m_sell_list);
+		map<string, vector<int>> map_v_buy, map_v_sell;
+		map_v_buy = tapi_2.ComputeBuyPerMin(m_buy_list, ExgValue);
+		map_v_sell = tapi_2.ComputeSellPerMin(m_sell_list, ExgValue);
+
+		tapi_2.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
+		cout << "309719208370" << "交易完成" << endl;
+	}
+	//析构
+	tapi_2.~testAPI();
 	
 	
 	
