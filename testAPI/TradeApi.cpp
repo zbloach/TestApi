@@ -249,12 +249,13 @@ bool TradeApi::buy_stock(string stock_id, int stock_num, double price, string& r
 {
 	int stockMarket = Toolkit::T_stockMarket(stock_id);
 	string ShareholderCode = "";
+	//1上交所股票，0深交所股票
 	if (stockMarket == 1)
 	{
 		ShareholderCode = m_userinfo.shid;
 	}
 	else
-		if (stockMarket == 2)
+		if (stockMarket == 0)
 		{
 		ShareholderCode = m_userinfo.szid;
 		}

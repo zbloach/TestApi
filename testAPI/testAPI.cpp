@@ -348,8 +348,12 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								return false;
 							}
 							//9代表买5位置，0代表的价格，1代表数量
-							//tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
-							cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股"<< endl;;
+							bool re = false;
+							cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股" << endl;
+						
+							tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
+							
+							
 							//not_exg_num = tdApi.QueryIsExgByid(vtbh);
 							//error_time++;
 							//if (error_time > max_error_time)
@@ -380,8 +384,11 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								return false;
 							}
 							//0代表卖5位置，0代表的价格，1代表数量
-							//tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
 							cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
+							
+							tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
+							
+							
 							//not_exg_num = tdApi.QueryIsExgByid(vtbh);
 							//error_time++;
 							//if (error_time > max_error_time)
@@ -438,7 +445,7 @@ int main()
 	map_ip_p.insert(make_pair("202.69.19.56", 80));
 	map_ip_p.insert(make_pair("116.228.52.71", 80));
 
-	cout << "测试版本" << endl;
+	cout << "版本号："<<"1_1" << endl;
 	cout << "连接测试..." << endl;
 	vector<string> v_ip;
 	map<string, int>::iterator iter = map_ip_p.begin();
@@ -460,19 +467,40 @@ int main()
 	//一次交易金额
 	int ExgValue = 21000;
 	//每次交易间隔时间  单位秒
-	int ExgPerSeconds = 50;
+	int ExgPerSeconds = 600;
 	//交易仓位
 	double position = 1;
-	Sleep(2000);
+	Sleep(1000);
 	bool result_1 = false;
 
 	//操作第一个账户
+	/*
+	testAPI tapi_1;
+	result_1 = tapi_1.Init(selectedIP, iter->second, "", "0", "309219037550", "651086");
+	if (result_1)
+	{
+		vector<string> sell_list_1, buy_list_1;
+		//tapi_1.test();
+		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
+		map<string, int> m_buy_list_1, m_sell_list_1;
+		tapi_1.ComputeBuyStockNum(position, positionNum, buy_list_1, m_buy_list_1);
+		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list_1);
+		map<string, vector<int>> map_v_buy_1, map_v_sell_1;
+		map_v_buy_1 = tapi_1.ComputeBuyPerMin(m_buy_list_1, ExgValue);
+		map_v_sell_1 = tapi_1.ComputeSellPerMin(m_sell_list_1, ExgValue);
+		tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy_1, map_v_sell_1);
+		cout << "309219037550" << "交易完成" << endl;
+	}
+	tapi_1.~testAPI();
+	*/
+	//操作第二个账户
+	
 	testAPI tapi;
 	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
 		vector<string> sell_list, buy_list;
-		tapi.readExgList("D:\\ExgFile\\ExgFile.txt", buy_list, sell_list);
+		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
 		tapi.ComputeBuyStockNum(position, positionNum, buy_list, m_buy_list);
 		tapi.ComputeSellStockNum(sell_list, m_sell_list);
@@ -486,25 +514,7 @@ int main()
 	//析构
 	tapi.~testAPI();
 
-	//操作第二个账户
 	
-	testAPI tapi_1;
-	result_1 = tapi_1.Init(selectedIP, iter->second, "", "0", "309219037550", "651086");
-	if (result_1)
-	{
-		vector<string> sell_list_1, buy_list_1;
-		//tapi_1.test();
-		tapi_1.readExgList("D:\\ExgFile\\ExgFile.txt", buy_list_1, sell_list_1);
-		map<string, int> m_buy_list_1, m_sell_list_1;
-		tapi_1.ComputeBuyStockNum(position,positionNum, buy_list_1, m_buy_list_1);
-		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list_1);
-		map<string, vector<int>> map_v_buy_1, map_v_sell_1;
-		map_v_buy_1 = tapi_1.ComputeBuyPerMin(m_buy_list_1, ExgValue);
-		map_v_sell_1 = tapi_1.ComputeSellPerMin(m_sell_list_1, ExgValue);
-		tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy_1, map_v_sell_1);
-		cout << "309219037550" << "交易完成" << endl;
-	}
-	tapi_1.~testAPI();
 	
 	
 	
