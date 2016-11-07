@@ -21,7 +21,8 @@ public:
 	//计算买卖股票的数量
 	//stockVolume持仓分成的分数
 	//position 仓位  0.5  半仓，1 全仓
-	bool ComputeBuyStockNum(double position,int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list);
+	//Retained funds 留存资金量
+	bool ComputeBuyStockNum(double retainedf,double position,int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list);
 	bool ComputeSellStockNum(vector<string> v_sell_list,map<string,int>& m_sell_list);
 	//perMin隔perNMin分钟交易一次,ExgNum交易次数
 	
