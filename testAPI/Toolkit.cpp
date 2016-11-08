@@ -51,6 +51,21 @@ int Toolkit::T_stockMarket(string stockcode)
 
 bool Toolkit::T_isNum(string str)
 {
+	int size = str.length();
+	char temp_c = '!';
+	for (int i = 0; i < size; i++)
+	{
+		temp_c = str[i];
+		if ((temp_c >= '0' && temp_c <= '9') || (temp_c >= 'a' && temp_c <= 'z') || (temp_c >= 'A' && temp_c <= 'Z'))
+		{
+			continue;
+		}
+		else
+			return false;
+		
+	}
+	return true;
+	/*
 	stringstream sin(str);
 	double d;
 	char c;
@@ -59,6 +74,7 @@ bool Toolkit::T_isNum(string str)
 	if (sin >> c)
 		return false;
 	return true;
+	*/
 }
 
 bool Toolkit::T_isExgTme(const time_t testtime)

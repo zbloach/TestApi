@@ -427,6 +427,8 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 
 int main()
 {
+	cout << "°æ±¾ºÅ£º" << "1_2" << endl;
+
 	map<string, int> map_ip_p;
 	map_ip_p.insert(make_pair("202.69.19.56", 7738));
 	map_ip_p.insert(make_pair("116.228.52.78", 7738));
@@ -437,7 +439,6 @@ int main()
 	map_ip_p.insert(make_pair("202.69.19.56", 80));
 	map_ip_p.insert(make_pair("116.228.52.71", 80));
 
-	cout << "°æ±¾ºÅ£º"<<"1_1" << endl;
 	cout << "Á¬½Ó²âÊÔ..." << endl;
 	vector<string> v_ip;
 	map<string, int>::iterator iter = map_ip_p.begin();

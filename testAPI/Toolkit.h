@@ -23,3 +23,4 @@ public:
 	static bool T_isExgTme(const time_t testtime);
 	static string T_selectIp(vector<string> v_ip);
 };
+
