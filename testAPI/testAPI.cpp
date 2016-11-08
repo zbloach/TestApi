@@ -194,15 +194,23 @@ map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, 
 			exg_stocks = 100 * (int)(ExgValue / price / 100);
 			//交易次数，只取整数次
 			exg_num = (int)iter->second / exg_stocks;
-			exg_stocks_last = iter->second - exg_stocks * (exg_num - 1);
 			stocks_list.clear();
-			for (int i = 0; i < exg_num; i++)
+			if (exg_num == 0)
 			{
-				if (i == exg_num - 1)
-					stocks_list.push_back(exg_stocks_last);
-				else
-					stocks_list.push_back(exg_stocks);
+				stocks_list.push_back(iter->second);
+			} 
+			else
+			{
+				exg_stocks_last = iter->second - exg_stocks * (exg_num - 1);
+				for (int i = 0; i < exg_num; i++)
+				{
+					if (i == exg_num - 1)
+						stocks_list.push_back(exg_stocks_last);
+					else
+						stocks_list.push_back(exg_stocks);
+				}
 			}
+			
 			m_buy_vector.insert(make_pair(iter->first, stocks_list));
 		}
 	}
@@ -306,14 +314,16 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 	struct tm* tm_now = NULL;
 	struct tm* tm_exg = NULL;
 
+	time_t time_temp;
+	struct tm* tm_temp = NULL;
+
 	do
 	{
 		tm_now = localtime(&time_now);
-		//cout << "现在时间： " << tm_now->tm_hour<<":"<<tm_now->tm_min<<":"<<tm_now->tm_sec << endl;
 		//非交易时段
 		if (!Toolkit::T_isExgTme(time_now))
 		{
-			cout << "现在时间： " << tm_now->tm_hour << ":" << tm_now->tm_min << ":" << tm_now->tm_sec << endl;
+			cout << "时间： " << tm_now->tm_hour << ":" << tm_now->tm_min << ":" << tm_now->tm_sec << endl;
 			//非交易时段
 			cout << "非交易时段" << endl;
 			Sleep(15000);
@@ -331,7 +341,6 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 
 				sell_iter = sell_list_num.begin();
 				buy_iter = buy_list_num.begin();
-				//for (exg_ser = 0; exg_ser < sell_size || exg_ser < buy_size; exg_ser++)
 				for (sell_iter, buy_iter; sell_iter != sell_list_num.end() || buy_iter != buy_list_num.end();)
 				{
 					//遍历卖出列表中的股票,一次遍历所有股票，执行其中的一次交易次数
@@ -351,16 +360,13 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								Sleep(3600000);
 								return false;
 							}
-							//9代表买5位置，0代表的价格，1代表数量
+							//获取时间
+							time(&time_temp);
+							tm_temp = localtime(&time_temp);
+							cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 							cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股" << endl;
-						
-							if (tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh) == false)
-							{
-								cout << "卖出股票:" << sell_iter->first << "失败" << endl;
-								Sleep(3600000);
-							}
-							else
-								cout << "卖出股票:" << sell_iter->first << "成功" << endl;
+							//9代表买5位置，0代表的价格，1代表数量
+							tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
 						}
 						//下一只股票
 						sell_iter++;
@@ -380,16 +386,13 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 								Sleep(3600000);
 								return false;
 							}
-							//0代表卖5位置，0代表的价格，1代表数量
+							//获取时间
+							time(&time_temp);
+							tm_temp = localtime(&time_temp);
+							cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 							cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
-							if (tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh) == false)
-							{
-								cout << "买入股票:" << buy_iter->first << "失败" << endl;
-								Sleep(3600000);
-							}
-							else
-								cout << "买入股票:" << buy_iter->first << "成功" << endl;
-							
+							//0代表卖5位置，0代表的价格，1代表数量
+							tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
 						}
 						//下一只股票
 						buy_iter++;
@@ -490,10 +493,8 @@ int main()
 		cout << "309219037550" << "交易完成" << endl;
 	}
 	tapi_1.~testAPI();
-	
+	cout << endl;
 	//操作4_ExgFile_zb账户
-	
-	/*
 	testAPI tapi;
 	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
 	if (result_1)
@@ -513,10 +514,10 @@ int main()
 	}
 	//析构
 	tapi.~testAPI();
-	*/
+	cout << endl;
 	
 	//操作8_ExgFile_jcp账户
-	/*
+	
 	testAPI tapi_2;
 	result_1 = tapi_2.Init(selectedIP, iter->second, "", "0", "309219088510", "651086");
 	if (result_1)
@@ -536,10 +537,7 @@ int main()
 	}
 	//析构
 	tapi_2.~testAPI();
-	*/
-	
-	
-	
+	cout << endl;
 	
 	Sleep(3600000);
 	return 0;

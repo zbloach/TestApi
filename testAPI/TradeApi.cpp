@@ -365,7 +365,7 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 	{
 		if (error_num > 0)
 		{
-			if (error_num == 20)
+			if (error_num == 3)
 			{
 				//重新登录，并且查询价格信息
 				Sleep(2000);
@@ -388,7 +388,7 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 			S_info = tradespi->JL_GetPrice_2(stock_id.c_str());
 		}
 		error_num++;
-		if (error_num >= 50)
+		if (error_num >= 6)
 		{
 			cout << stock_id << ":没有价格信息" << endl;
 			return false;
