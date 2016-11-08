@@ -156,9 +156,31 @@ void testAPI::test()
 	//this->readExgList()
 	//this->ComputeBuyPerMin()
 	//this->tdApi.cancel_order("97488957");
-	AccountInfo ac;
+	//AccountInfo ac;
+	//StockPrice sp;
+	//this->tdApi.QueryAccountMoney(ac);
 	StockPrice sp;
-	this->tdApi.QueryAccountMoney(ac);
+	int i = 0;
+	vector<string> stock_list;
+	stock_list.push_back("002394");
+	stock_list.push_back("600060");
+	stock_list.push_back("600350");
+	stock_list.push_back("600684");
+	stock_list.push_back("000581");
+	stock_list.push_back("000726");
+	stock_list.push_back("000936");
+	stock_list.push_back("600548");
+	stock_list.push_back("600761");
+	stock_list.push_back("601107");
+	while (i < 1000)
+	{
+		for (int j = 0; j < stock_list.size(); j++)
+		{
+			tdApi.get_price(stock_list[j], sp);
+		}
+		i++;
+	}
+	
 	//this->tdApi.get_price("600350",sp);
 	string re;
 	//tdApi.sell_stock("600350", 100, 6.0, re);
