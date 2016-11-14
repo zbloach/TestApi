@@ -453,7 +453,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 int main()
 {
 	cout << "版本号：" << "1_2" << endl;
-
+	//ip地址列表
 	map<string, int> map_ip_p;
 	map_ip_p.insert(make_pair("202.69.19.56", 7738));
 	map_ip_p.insert(make_pair("116.228.52.78", 7738));
@@ -479,14 +479,18 @@ int main()
 		return 0;
 	}
 	iter = map_ip_p.find(selectedIP);
+	//相应的端口号
+	int port = iter->second;
 
 	//最大持仓股票数目
 	int positionNum = 10;
 	//一次交易金额
 	int ExgValue = 21000;
 	//每次交易间隔时间  单位秒
-	int ExgPerSeconds = 400
-		;
+	int ExgPerSeconds = 400;
+
+	cout << "请输入交易间隔时间(单位：秒)..." << endl;
+	cin >> ExgPerSeconds;
 	//交易仓位
 	double position = 1;
 	cout << "持仓股票数目：" << positionNum << endl;
@@ -498,7 +502,7 @@ int main()
 	//操作1_ExgFile_zyj账户
 	
 	testAPI tapi_1;
-	result_1 = tapi_1.Init(selectedIP, iter->second, "", "0", "309219037550", "651086");
+	result_1 = tapi_1.Init(selectedIP, port, "", "0", "309219037550", "651086");
 	if (result_1)
 	{
 		//账户留存资金
@@ -519,7 +523,7 @@ int main()
 	cout << endl;
 	//操作4_ExgFile_zb账户
 	testAPI tapi;
-	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
+	result_1 = tapi.Init(selectedIP, port, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
 		double Retained_funds = 500000;
@@ -542,7 +546,7 @@ int main()
 	//操作8_ExgFile_jcp账户
 	
 	testAPI tapi_2;
-	result_1 = tapi_2.Init(selectedIP, iter->second, "", "0", "309219088510", "651086");
+	result_1 = tapi_2.Init(selectedIP, port, "", "0", "309219088510", "651086");
 	if (result_1)
 	{
 		double Retained_funds = 500000;
