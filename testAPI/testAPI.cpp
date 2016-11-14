@@ -338,6 +338,8 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 
 	time_t time_temp;
 	struct tm* tm_temp = NULL;
+	//记录分钟数字
+	int jilu_min = 0;
 
 	do
 	{
@@ -428,6 +430,14 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 			}
 			else //没到达下一次交易时间，继续等待，更新当前时间
 			{
+				time(&time_temp);
+				tm_temp = localtime(&time_temp);
+				if (jilu_min != tm_temp->tm_min)
+				{
+					//输出更新时间
+					cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
+					jilu_min = tm_temp->tm_min;
+				}
 				//cout << "等待下一次交易周期" << endl;
 			}
 			//本轮交易完成，重置下一次交易时间
