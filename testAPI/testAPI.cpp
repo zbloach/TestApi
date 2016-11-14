@@ -485,7 +485,8 @@ int main()
 	//一次交易金额
 	int ExgValue = 21000;
 	//每次交易间隔时间  单位秒
-	int ExgPerSeconds = 600;
+	int ExgPerSeconds = 400
+		;
 	//交易仓位
 	double position = 1;
 	cout << "持仓股票数目：" << positionNum << endl;
@@ -501,7 +502,7 @@ int main()
 	if (result_1)
 	{
 		//账户留存资金
-		double Retained_funds = 0;
+		double Retained_funds = 500000;
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
@@ -521,7 +522,7 @@ int main()
 	result_1 = tapi.Init(selectedIP, iter->second, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 0;
+		double Retained_funds = 500000;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -544,7 +545,7 @@ int main()
 	result_1 = tapi_2.Init(selectedIP, iter->second, "", "0", "309219088510", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 0;
+		double Retained_funds = 500000;
 		vector<string> sell_list, buy_list;
 		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
