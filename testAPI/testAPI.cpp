@@ -520,13 +520,28 @@ int main()
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
-		map<string, int> m_buy_list_1, m_sell_list_1;
-		tapi_1.ComputeBuyStockNum(Retained_funds,position, positionNum, buy_list_1, m_buy_list_1);
-		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list_1);
-		map<string, vector<int>> map_v_buy_1, map_v_sell_1;
-		map_v_buy_1 = tapi_1.ComputeBuyPerMin(m_buy_list_1, ExgValue);
-		map_v_sell_1 = tapi_1.ComputeSellPerMin(m_sell_list_1, ExgValue);
-		tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy_1, map_v_sell_1);
+		map<string, int> m_buy_list, m_sell_list;
+		tapi_1.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list_1, m_buy_list);
+		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list);
+
+		cout << endl;
+		cout << "卖出股票列表:" << endl;
+		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
+		{
+			cout << iter_0->first << ":" << iter_0->second << endl;
+		}
+		cout << endl;
+		cout << "买入股票列表:" << endl;
+		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
+		{
+			cout << iter_0->first << ":" << iter_0->second << endl;
+		}
+		cout << endl;
+
+		map<string, vector<int>> map_v_buy, map_v_sell;
+		map_v_buy = tapi_1.ComputeBuyPerMin(m_buy_list, ExgValue);
+		map_v_sell = tapi_1.ComputeSellPerMin(m_sell_list, ExgValue);
+		tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
 		cout << "309219037550" << "交易完成" << endl;
 	}
 	tapi_1.~testAPI();
@@ -536,12 +551,27 @@ int main()
 	result_1 = tapi.Init(selectedIP, port, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 500000;
+		double Retained_funds = 1850000;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
 		tapi.ComputeBuyStockNum(Retained_funds,position, positionNum, buy_list, m_buy_list);
 		tapi.ComputeSellStockNum(sell_list, m_sell_list);
+
+		cout << endl;
+		cout << "卖出股票列表:" << endl;
+		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
+		{
+			cout << iter_0->first << ":" << iter_0->second << endl;
+		}
+		cout << endl;
+		cout << "买入股票列表:" << endl;
+		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
+		{
+			cout << iter_0->first << ":" << iter_0->second << endl;
+		}
+		cout << endl;
+
 		map<string, vector<int>> map_v_buy, map_v_sell;
 		map_v_buy = tapi.ComputeBuyPerMin(m_buy_list, ExgValue);
 		map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
@@ -565,6 +595,21 @@ int main()
 		map<string, int> m_buy_list, m_sell_list;
 		tapi_2.ComputeBuyStockNum(Retained_funds,position, positionNum, buy_list, m_buy_list);
 		tapi_2.ComputeSellStockNum(sell_list, m_sell_list);
+
+		cout << endl;
+		cout << "卖出股票列表:" << endl;
+		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
+		{
+			cout << iter_0->first << ":" << iter_0->second << endl;
+		}
+		cout << endl;
+		cout << "买入股票列表:" << endl;
+		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
+		{
+			cout << iter_0->first << ":" << iter_0->second << endl;
+		}
+		cout << endl;
+
 		map<string, vector<int>> map_v_buy, map_v_sell;
 		map_v_buy = tapi_2.ComputeBuyPerMin(m_buy_list, ExgValue);
 		map_v_sell = tapi_2.ComputeSellPerMin(m_sell_list, ExgValue);
