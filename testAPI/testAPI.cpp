@@ -551,7 +551,7 @@ int main()
 	result_1 = tapi.Init(selectedIP, port, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 1850000;
+		double Retained_funds = 2100000;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
