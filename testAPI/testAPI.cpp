@@ -516,7 +516,7 @@ int main()
 	if (result_1)
 	{
 		//ÕË»§Áô´æ×Ê½ð
-		double Retained_funds = 500000;
+		double Retained_funds = 0;
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
@@ -552,7 +552,7 @@ int main()
 	result_1 = tapi.Init(selectedIP, port, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 2100000;
+		double Retained_funds = 0;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -589,7 +589,7 @@ int main()
 	result_1 = tapi_2.Init(selectedIP, port, "", "0", "309219088510", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 500000;
+		double Retained_funds = 0;
 		vector<string> sell_list, buy_list;
 		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -627,7 +627,7 @@ int main()
 	result_1 = tapi_3.Init(selectedIP, port, "", "0", "309219171085", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 500000;
+		double Retained_funds = 0;
 		vector<string> sell_list, buy_list;
 		tapi_3.readExgList("D:\\ExgFile\\10_ExgFile_zjj.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
