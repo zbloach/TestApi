@@ -36,6 +36,13 @@ private:
 	typedef char*(__stdcall* GetPrice_2)(const char* Gpdm);
 	typedef char*(__stdcall* SendOrder_2)(int Fx, const char* User, const char* Gddm, const char*  Gpdm, int Quantity, float Price);
 	typedef char*(__stdcall* CancelOrder_2)(const char* User, const char* Entrustid, int jys);
+
+	HMODULE HMODULE4;
+	typedef bool(__stdcall* Login_3)(const char* IP, int Port, const char* User, const char* PassWord, const char* TXPass, const char* Yyb);
+	typedef char*(__stdcall* QueryData_3)(const char* User, int Category);
+	typedef char*(__stdcall* GetPrice_3)(const char* Gpdm);
+	typedef char*(__stdcall* SendOrder_3)(int Fx, const char* User, const char* Gddm, const char*  Gpdm, int Quantity, float Price);
+	typedef char*(__stdcall* CancelOrder_3)(const char* User, const char* Entrustid, int jys);
 public:
 	Login_0 JL_Login_0;
 	SendOrder_0 JL_SendOrder_0;
@@ -54,4 +61,10 @@ public:
 	GetPrice_2 JL_GetPrice_2;
 	QueryData_2 JL_QueryData_2;
 	CancelOrder_2 JL_CancelOrder_2;
+
+	Login_3 JL_Login_3;
+	SendOrder_3 JL_SendOrder_3;
+	GetPrice_3 JL_GetPrice_3;
+	QueryData_3 JL_QueryData_3;
+	CancelOrder_3 JL_CancelOrder_3;
 };

@@ -22,5 +22,12 @@ TradeSpi::TradeSpi()
 	JL_GetPrice_2 = (GetPrice_2)(GetProcAddress(HMODULE3, "JL_GetPrice"));
 	JL_SendOrder_2 = (SendOrder_2)(GetProcAddress(HMODULE3, "JL_SendOrder"));
 	JL_CancelOrder_2 = (CancelOrder_2)(GetProcAddress(HMODULE3, "JL_CancelOrder"));
+
+	HMODULE4 = LoadLibrary(TEXT("JLAPI_zjj.dll"));
+	JL_Login_3 = (Login_3)GetProcAddress(HMODULE4, "JL_Login");
+	JL_QueryData_3 = (QueryData_3)GetProcAddress(HMODULE4, "JL_QueryData");
+	JL_GetPrice_3 = (GetPrice_3)(GetProcAddress(HMODULE4, "JL_GetPrice"));
+	JL_SendOrder_3 = (SendOrder_3)(GetProcAddress(HMODULE4, "JL_SendOrder"));
+	JL_CancelOrder_3 = (CancelOrder_3)(GetProcAddress(HMODULE4, "JL_CancelOrder"));
 }
 
