@@ -543,6 +543,11 @@ int main()
 		map_v_sell = tapi_1.ComputeSellPerMin(m_sell_list, ExgValue);
 		tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
 		cout << "309219037550" << "交易完成" << endl;
+		if (!(buy_list_1.empty() && buy_list_1.empty()))
+		{
+			cout << "等待下一个账户交易" << endl;
+			Sleep(ExgPerSeconds * 1000);
+		}
 	}
 	tapi_1.~testAPI();
 	cout << endl;
@@ -579,6 +584,11 @@ int main()
 
 		tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
 		cout << "309719208370" << "交易完成" << endl;
+		if (!(buy_list.empty() && sell_list.empty()))
+		{
+			cout << "等待下一个账户交易" << endl;
+			Sleep(ExgPerSeconds * 1000);
+		}
 	}
 	//析构
 	tapi.~testAPI();
@@ -616,6 +626,11 @@ int main()
 
 		tapi_2.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell);
 		cout << "309219088510" << "交易完成" << endl;
+		if (!(buy_list.empty() && sell_list.empty()))
+		{
+			cout << "等待下一个账户交易" << endl;
+			Sleep(ExgPerSeconds * 1000);
+		}
 	}
 	//析构
 	tapi_2.~testAPI();

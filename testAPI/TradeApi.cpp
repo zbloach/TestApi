@@ -392,14 +392,15 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 	{
 		if (error_num > 0)
 		{
-			if (error_num == 3)
+			if (error_num % 4 == 0)
 			{
 				//重新登录，并且查询价格信息
-				Sleep(2000);
+				//Sleep(2000);
 				cout << "重新登录" << endl;
 				this->Login(m_userinfo.userid, m_userinfo.password);
 			}
 			cout << m_userinfo.userid << ":第" << error_num << "次重复查询:" << stock_id << "价格信息" << endl;
+			sleeptime = sleeptime + 2000;
 			Sleep(sleeptime);
 		}
 		if (m_userinfo.userid == "309719208370")
@@ -419,7 +420,7 @@ bool TradeApi::get_price(string stock_id, StockPrice& stockprice)
 			S_info = tradespi->JL_GetPrice_3(stock_id.c_str());
 		}
 		error_num++;
-		if (error_num >= 6)
+		if (error_num >= 20)
 		{
 			cout << stock_id << ":没有价格信息" << endl;
 			return false;
