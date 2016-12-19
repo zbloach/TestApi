@@ -32,6 +32,8 @@ public:
 	map<string, vector<int>> ComputeSellPerMin(map<string, int> m_sell_list, int ExgValue);
 	void test();
 
+	double return_value();
+
 private:
 	//vector<string> m_sell_list;
 	//vector<string> m_buy_list;

@@ -108,7 +108,7 @@ bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionN
 			{
 				//更新买入股票数量
 				iter->second = iter->second - find_iter->second;
-				if (iter->second <= 0)
+				if (iter->second <= 100)
 				{
 					temp_iter = iter;
 					iter = m_buy_list.erase(temp_iter);
@@ -460,8 +460,16 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 	return true;
 }
 
+double testAPI::return_value()
+{
+	AccountInfo acinfo;
+	tdApi.QueryAccountMoney(acinfo);
+	return acinfo.totalValue;
+}
+
 int main()
 {
+	vector<double> money_list;
 	cout << "版本号：" << "1_2" << endl;
 	//ip地址列表
 	map<string, int> map_ip_p;
@@ -515,8 +523,9 @@ int main()
 	result_1 = tapi_1.Init(selectedIP, port, "", "0", "309219037550", "651086");
 	if (result_1)
 	{
+		money_list.push_back(tapi_1.return_value());
 		//账户留存资金
-		double Retained_funds = 0;
+		double Retained_funds = 50000;
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
@@ -557,7 +566,8 @@ int main()
 	result_1 = tapi.Init(selectedIP, port, "", "0", "309719208370", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 0;
+		money_list.push_back(tapi.return_value());
+		double Retained_funds = 50000;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -599,7 +609,8 @@ int main()
 	result_1 = tapi_2.Init(selectedIP, port, "", "0", "309219088510", "651086");
 	if (result_1)
 	{
-		double Retained_funds = 0;
+		money_list.push_back(tapi_2.return_value());
+		double Retained_funds = 200000;
 		vector<string> sell_list, buy_list;
 		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -642,6 +653,7 @@ int main()
 	result_1 = tapi_3.Init(selectedIP, port, "", "0", "309219171085", "651086");
 	if (result_1)
 	{
+		money_list.push_back(tapi_3.return_value());
 		double Retained_funds = 0;
 		vector<string> sell_list, buy_list;
 		tapi_3.readExgList("D:\\ExgFile\\10_ExgFile_zjj.txt", buy_list, sell_list);
@@ -673,7 +685,15 @@ int main()
 	//析构
 	tapi_3.~testAPI();
 	cout << endl;
-
+	vector<double>::iterator iter0;
+	int i = 0;
+	double total_value = 0;
+	for (iter0 = money_list.begin(); iter0 != money_list.end(); iter0++, i++)
+	{
+		cout << std::fixed << money_list[i] << endl;
+		total_value = total_value + money_list[i];
+	}
+	cout << total_value << endl;
 	Sleep(3600000);
 	return 0;
 }
