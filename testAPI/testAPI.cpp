@@ -52,8 +52,11 @@ testAPI::~testAPI()
 	
 }
 //positionNum   股票只数
-bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list)
+//min_exgMoney  最小交易金额
+bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list,double min_exgMoney)
 {
+	//记录最新价格信息
+	map<string, double> map_sp;
 	//计算买入数量
 	m_buy_list.clear();
 	AccountInfo acinfo;
@@ -76,7 +79,7 @@ bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionN
 		double price;
 		while (i < v_buy_list.size())
 		{
-			if (!tdApi.get_price(v_buy_list[i], sp))
+			if (!tdApi.get_price_tx(v_buy_list[i], sp))
 			{
 				return false;
 			}
@@ -86,6 +89,7 @@ bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionN
 				price = sp.LastClose;
 			else
 				price = sp.NewPrice;
+			map_sp.insert(make_pair(v_buy_list[i], price));
 			stockNum = 0;
 			stockNum = (int)(totalValue / positionNum / price / 100)* 100;
 			m_buy_list.insert(make_pair(v_buy_list[i], stockNum));
@@ -108,7 +112,7 @@ bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionN
 			{
 				//更新买入股票数量
 				iter->second = iter->second - find_iter->second;
-				if (iter->second <= 100)
+				if (iter->second * map_sp.at(iter->first) < min_exgMoney)
 				{
 					temp_iter = iter;
 					iter = m_buy_list.erase(temp_iter);
@@ -181,14 +185,14 @@ void testAPI::test()
 		i++;
 	}
 	
-	//this->tdApi.get_price("600350",sp);
+	//this->tdApi.get_price_tx("600350",sp);
 	string re;
 	//tdApi.sell_stock("600350", 100, 6.0, re);
 	cout << "xxxx" << endl;
 }
 
 
-map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, int ExgValue)
+map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, double ExgValue)
 {
 	map<string, vector<int>> m_buy_vector;
 	if (m_buy_list.size() > 0)
@@ -203,7 +207,7 @@ map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, 
 		int exg_num;
 		for (iter; iter != m_buy_list.end(); iter++)
 		{
-			if (!tdApi.get_price(iter->first, sp))
+			if (!tdApi.get_price_tx(iter->first, sp))
 			{
 				m_buy_vector.clear();
 				return m_buy_vector;
@@ -239,7 +243,7 @@ map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, 
 	return m_buy_vector;
 }
 
-map<string, vector<int>> testAPI::ComputeSellPerMin(map<string, int> m_sell_list, int ExgValue)
+map<string, vector<int>> testAPI::ComputeSellPerMin(map<string, int> m_sell_list, double ExgValue)
 {
 	map<string, vector<int>> m_sell_vector;
 	if (m_sell_list.size() > 0)
@@ -254,7 +258,7 @@ map<string, vector<int>> testAPI::ComputeSellPerMin(map<string, int> m_sell_list
 		map<string, int>::iterator iter = m_sell_list.begin();
 		for (iter; iter != m_sell_list.end(); iter++)
 		{
-			if (!tdApi.get_price(iter->first, sp))
+			if (!tdApi.get_price_tx(iter->first, sp))
 			{
 				m_sell_vector.clear();
 				return m_sell_vector;
@@ -379,7 +383,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 							not_exg_num = sell_iter->second[ser_num];
 							error_time = 0;
 							//获取价格
-							if (!tdApi.get_price(sell_iter->first, sp))
+							if (!tdApi.get_price_tx(sell_iter->first, sp))
 							{
 								Sleep(3600000);
 								return false;
@@ -405,7 +409,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 							not_exg_num = buy_iter->second[ser_num];
 							error_time = 0;
 
-							if (!tdApi.get_price(buy_iter->first, sp))
+							if (!tdApi.get_price_tx(buy_iter->first, sp))
 							{
 								Sleep(3600000);
 								return false;
@@ -503,7 +507,9 @@ int main()
 	//最大持仓股票数目
 	int positionNum = 10;
 	//一次交易金额
-	int ExgValue = 22000;
+	double ExgValue = 22000;
+	//最小买入金额
+	double min_exgMoney = 3000;
 	//每次交易间隔时间  单位秒
 	int ExgPerSeconds = 400;
 
@@ -513,6 +519,7 @@ int main()
 	double position = 1;
 	cout << "持仓股票数目：" << positionNum << endl;
 	cout << "单次交易金额：" << ExgValue << endl;
+	cout << "最小买入金额：" << min_exgMoney << endl;
 	cout << "交易间隔时间：" << ExgPerSeconds <<"秒"<< endl;
 	Sleep(1000);
 	bool result_1 = false;
@@ -530,7 +537,7 @@ int main()
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
 		map<string, int> m_buy_list, m_sell_list;
-		tapi_1.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list_1, m_buy_list);
+		tapi_1.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list_1, m_buy_list, min_exgMoney);
 		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list);
 
 		cout << endl;
@@ -571,7 +578,7 @@ int main()
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
-		tapi.ComputeBuyStockNum(Retained_funds,position, positionNum, buy_list, m_buy_list);
+		tapi.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list, min_exgMoney);
 		tapi.ComputeSellStockNum(sell_list, m_sell_list);
 
 		cout << endl;
@@ -614,7 +621,7 @@ int main()
 		vector<string> sell_list, buy_list;
 		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
-		tapi_2.ComputeBuyStockNum(Retained_funds,position, positionNum, buy_list, m_buy_list);
+		tapi_2.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list, min_exgMoney);
 		tapi_2.ComputeSellStockNum(sell_list, m_sell_list);
 
 		cout << endl;
@@ -658,7 +665,7 @@ int main()
 		vector<string> sell_list, buy_list;
 		tapi_3.readExgList("D:\\ExgFile\\10_ExgFile_zjj.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
-		tapi_3.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list);
+		tapi_3.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list, min_exgMoney);
 		tapi_3.ComputeSellStockNum(sell_list, m_sell_list);
 
 		cout << endl;

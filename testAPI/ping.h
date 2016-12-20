@@ -6,7 +6,7 @@
 
 #include <winsock2.h>
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+//#include <windows.h>
 #pragma comment(lib, "WS2_32")    // Á´½Óµ½WS2_32.lib
 
 #define DEF_PACKET_SIZE_0 32

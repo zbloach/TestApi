@@ -22,14 +22,14 @@ public:
 	//stockVolume持仓分成的分数
 	//position 仓位  0.5  半仓，1 全仓
 	//Retained funds 留存资金量
-	bool ComputeBuyStockNum(double retainedf,double position,int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list);
+	bool ComputeBuyStockNum(double retainedf, double position, int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list，, double min_exgMoney);
 	bool ComputeSellStockNum(vector<string> v_sell_list,map<string,int>& m_sell_list);
 	//perMin隔perNMin分钟交易一次,ExgNum交易次数
 	
 	bool ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num);
 	
-	map<string, vector<int>> ComputeBuyPerMin(map<string, int> m_buy_list, int ExgValue);
-	map<string, vector<int>> ComputeSellPerMin(map<string, int> m_sell_list, int ExgValue);
+	map<string, vector<int>> ComputeBuyPerMin(map<string, int> m_buy_list, double ExgValue);
+	map<string, vector<int>> ComputeSellPerMin(map<string, int> m_sell_list, double ExgValue);
 	void test();
 
 	double return_value();

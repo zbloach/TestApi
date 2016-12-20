@@ -1,4 +1,7 @@
 #pragma once
+#ifndef _TRADESPI_
+#define _TRADESPI_
+#endif
 #include "stdio.h"
 #include <iostream>
 #include <string>
