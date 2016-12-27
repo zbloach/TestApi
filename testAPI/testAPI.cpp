@@ -509,6 +509,8 @@ int main()
 	//一次交易金额
 	double ExgValue = 22000;
 	//最小买入金额
+	//暂定最小买入金额为3000
+	//目的是为了过滤较小的仓差交易，增大交易费用
 	double min_exgMoney = 3000;
 	//每次交易间隔时间  单位秒
 	int ExgPerSeconds = 400;
@@ -532,7 +534,7 @@ int main()
 	{
 		money_list.push_back(tapi_1.return_value());
 		//账户留存资金
-		double Retained_funds = 50000;
+		double Retained_funds = 0;
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
@@ -574,7 +576,7 @@ int main()
 	if (result_1)
 	{
 		money_list.push_back(tapi.return_value());
-		double Retained_funds = 50000;
+		double Retained_funds = 0;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -617,7 +619,7 @@ int main()
 	if (result_1)
 	{
 		money_list.push_back(tapi_2.return_value());
-		double Retained_funds = 200000;
+		double Retained_funds = 0;
 		vector<string> sell_list, buy_list;
 		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
