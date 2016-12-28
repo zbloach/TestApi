@@ -34,7 +34,7 @@ int Toolkit::T_stockMarket(string stockcode)
 {
 	char* a = (char*)malloc(sizeof(stockcode.c_str()));
 	strcpy(a, stockcode.c_str());
-	if (a[0] == '6')
+	if (a[0] == '6' || strcmp("000300",a) == 0)
 	{
 		//上交所股票
 		return 1;
