@@ -526,6 +526,14 @@ int main()
 	Sleep(1000);
 	bool result_1 = false;
 
+	//文件操作
+	//记录市值数据
+	ofstream fileout("D:\\ExgFile\\total_value.txt", ios::trunc);
+	if (!fileout)
+	{
+		cout << "Create file failure...\n";
+		exit(0);
+	}
 	//操作1_ExgFile_zyj账户
 	
 	testAPI tapi_1;
@@ -700,10 +708,14 @@ int main()
 	for (iter0 = money_list.begin(); iter0 != money_list.end(); iter0++, i++)
 	{
 		cout << std::fixed << money_list[i] << endl;
+		fileout << std::fixed << money_list[i] << endl;
 		total_value = total_value + money_list[i];
 	}
 	cout << total_value << endl;
+	fileout << total_value << endl;
 	Sleep(3600000);
+	//文件关闭
+	fileout.close();
 	return 0;
 }
 
