@@ -542,7 +542,7 @@ int main()
 	{
 		money_list.push_back(tapi_1.return_value());
 		//ÕË»§Áô´æ×Ê½ð
-		double Retained_funds = 0;
+		double Retained_funds = 250000;
 		vector<string> sell_list_1, buy_list_1;
 		//tapi_1.test();
 		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
@@ -584,7 +584,7 @@ int main()
 	if (result_1)
 	{
 		money_list.push_back(tapi.return_value());
-		double Retained_funds = 0;
+		double Retained_funds = 250000;
 		vector<string> sell_list, buy_list;
 		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -627,7 +627,7 @@ int main()
 	if (result_1)
 	{
 		money_list.push_back(tapi_2.return_value());
-		double Retained_funds = 0;
+		double Retained_funds = 250000;
 		vector<string> sell_list, buy_list;
 		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
@@ -671,7 +671,7 @@ int main()
 	if (result_1)
 	{
 		money_list.push_back(tapi_3.return_value());
-		double Retained_funds = 0;
+		double Retained_funds = 250000;
 		vector<string> sell_list, buy_list;
 		tapi_3.readExgList("D:\\ExgFile\\10_ExgFile_zjj.txt", buy_list, sell_list);
 		map<string, int> m_buy_list, m_sell_list;
