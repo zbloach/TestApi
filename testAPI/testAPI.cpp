@@ -534,6 +534,13 @@ int main()
 		cout << "Create file failure...\n";
 		exit(0);
 	}
+
+	//获取hs300指数的最新价格
+	TradeApi tradeapi_0;
+	StockPrice sp;
+	tradeapi_0.get_price_tx("000300", sp);
+	fileout << sp.NewPrice << endl;
+
 	//操作1_ExgFile_zyj账户
 	
 	testAPI tapi_1;
@@ -712,12 +719,8 @@ int main()
 		total_value = total_value + money_list[i];
 	}
 	cout << total_value << endl;
-	fileout << total_value << endl;
-	//获取hs300指数的最新价格
-	TradeApi tradeapi_0;
-	StockPrice sp;
-	tradeapi_0.get_price_tx("000300", sp);
-	fileout << sp.NewPrice << endl;
+	//fileout << total_value << endl;
+	
 	
 	Sleep(3600000);
 	//文件关闭
