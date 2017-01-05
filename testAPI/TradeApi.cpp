@@ -109,9 +109,9 @@ bool TradeApi::QueryAccountMoney(struct AccountInfo& ac_info)
 	{
 		string S_info = info;
 		vector<string> v_info = Toolkit::T_split(S_info, "|");
-		ac_info.totalMoney = atol(v_info[26].c_str());
-		ac_info.totalStock = atol(v_info[30].c_str());
-		ac_info.totalValue = atol(v_info[31].c_str());
+		ac_info.totalMoney = atof(v_info[26].c_str());
+		ac_info.totalStock = atof(v_info[30].c_str());
+		ac_info.totalValue = atof(v_info[31].c_str()) + atof(v_info[20].c_str());
 		return true;
 	}
 	return false;
