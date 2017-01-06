@@ -26,8 +26,12 @@ public:
 	bool ComputeSellStockNum(vector<string> v_sell_list,map<string,int>& m_sell_list);
 	//perMin隔perNMin分钟交易一次,ExgNum交易次数
 	
-	bool ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num);
+	bool ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min, int max_ser, vector<time_t> exgtime_list);
 	
+	int ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min,int& max_ser);
+
+	vector<time_t> ComputeExgtime_list(int perSeconds,int add_min,int max_ser);
+
 	map<string, vector<int>> ComputeBuyPerMin(map<string, int> m_buy_list, double ExgValue);
 	map<string, vector<int>> ComputeSellPerMin(map<string, int> m_sell_list, double ExgValue);
 	void test();

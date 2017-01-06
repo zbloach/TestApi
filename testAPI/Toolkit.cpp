@@ -77,7 +77,7 @@ bool Toolkit::T_isNum(string str)
 	*/
 }
 
-bool Toolkit::T_isExgTme(const time_t testtime)
+int Toolkit::T_isExgTme(const time_t testtime, int add_min)
 {
 	//time_t time_now;
 	//time(&time_now);
@@ -86,25 +86,48 @@ bool Toolkit::T_isExgTme(const time_t testtime)
 	tm tm_start0 = *tm_testtime;
 	time_t time_start0,time_end0,time_start1,time_end1;
 	tm_start0.tm_hour = 9;
-	tm_start0.tm_min = 30;
+	tm_start0.tm_min = 30 + add_min;
 	tm_start0.tm_sec = 0;
 	time_start0 = mktime(&tm_start0);
-	time_end0 = time_start0 + 2 * 3600;
-	time_start1 = time_end0 + 1.5 * 3600;
-	time_end1 = time_start1 + 2 * 3600;
+	time_end0 = time_start0 + 2 * 3600 - add_min * 60;
+	time_start1 = time_end0 + 1.5 * 3600 + add_min * 60;
+	time_end1 = time_start1 + 2 * 3600 - add_min * 60;
+
+	if (testtime < time_start0)
+	{
+		return 0;
+	}
+
+	if (testtime >= time_start0 && testtime < time_end0)
+	{
+		return 1;
+	}
+
+	if (testtime >= time_end0 && testtime < time_start1)
+	{
+		return 2;
+	}
+
+	if (testtime >= time_start1 && testtime < time_end1)
+	{
+		return 3;
+	}
+
+	if (testtime >= time_end1)
+	{
+		return 4;
+	}
+	/*
 	if ((testtime >= time_start0 && testtime < time_end0) || (testtime >= time_start1 && testtime < time_end1))
 	{
 		//printf("交易时间\n");
 		return true;
 	}
 	//double xx0 = difftime(time_end0, time_start0);
-	/*
-	if (testtime <)
-	{
-	}
-	*/
 	//printf("非交易时间\n");
-	return false;
+	//return false;
+	*/
+	return -1;
 }
 
 std::string Toolkit::T_selectIp(vector<string> v_ip)
