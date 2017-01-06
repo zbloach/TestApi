@@ -622,6 +622,11 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 vector<time_t> testAPI::ComputeExgtime_list(int perSeconds,int add_min,int max_ser)
 {
 	vector<time_t> reslut_list;
+	if (max_ser == 0)
+	{
+		return reslut_list;
+	}
+	
 	time_t time_now, time_startexg, time_start0,time_start1;
 	tm tm_start;
 	//初始化时间
