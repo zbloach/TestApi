@@ -14,9 +14,9 @@ struct ServerInfo
 struct AccountInfo
 {
 	//’Àªß–≈œ¢
-	long totalStock;
-	long totalMoney;
-	long totalValue;
+	double totalStock;
+	double totalMoney;
+	double totalValue;
 };
 
 struct UserInfo 

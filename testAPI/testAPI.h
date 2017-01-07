@@ -28,7 +28,7 @@ public:
 	
 	bool ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min, int max_ser, vector<time_t> exgtime_list);
 	
-	int ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min,int& max_ser);
+	int ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min, int& max_ser, double part_time);
 
 	vector<time_t> ComputeExgtime_list(int perSeconds,int add_min,int max_ser);
 

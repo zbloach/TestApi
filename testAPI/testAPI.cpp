@@ -381,7 +381,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 						cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 						cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股" << endl;
 						//9代表买5位置，0代表的价格，1代表数量
-						tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
+						//tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
 					}
 					//下一只股票
 					sell_iter++;
@@ -407,7 +407,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 						cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 						cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
 						//0代表卖5位置，0代表的价格，1代表数量
-						tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
+						//tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
 					}
 					//下一只股票
 					buy_iter++;
@@ -557,7 +557,7 @@ double testAPI::return_value()
 	return acinfo.totalValue;
 }
 //计算交易之间的间隔时间，单位秒
-int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min, int& max_ser)
+int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string, vector<int>> sell_list_num, int add_min, int& max_ser,double part_time)
 {
 	//序号
 	//计算需要交易的最大次数
@@ -584,7 +584,7 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 	int time_state = Toolkit::T_isExgTme(time_now, add_min);
 	if (time_state == 0)
 	{
-		exg_seconds = 4 * 3600 - add_min * 60;
+		exg_seconds = (4 * 3600 - add_min * 60) * part_time;
 	}
 	
 	tm* tm_now = localtime(&time_now);
@@ -598,17 +598,17 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 
 	if (time_state == 1)
 	{
-		exg_seconds = time_end - time_now -1.5 * 3600 - add_min * 60;
+		exg_seconds = (time_end - time_now - 1.5 * 3600 - add_min * 60) * part_time;
 	}
 
 	if (time_state == 2)
 	{
-		exg_seconds = 2 * 3600 - add_min * 60;
+		exg_seconds = (2 * 3600 - add_min * 60) * part_time;
 	}
 
 	if (time_state == 3)
 	{
-		exg_seconds = time_end - time_now;
+		exg_seconds = (time_end - time_now) * part_time;
 	}
 
 	if (time_state == 4)
@@ -619,7 +619,7 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 	return floor(exg_seconds / max_ser_num);
 }
 
-vector<time_t> testAPI::ComputeExgtime_list(int perSeconds,int add_min,int max_ser)
+vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max_ser)
 {
 	vector<time_t> reslut_list;
 	if (max_ser == 0)
@@ -676,6 +676,12 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds,int add_min,int max_s
 	if (time_state == 3)
 	{
 		time_startexg = time_now + floor(perSeconds / 2);
+	}
+
+	//下午已经收盘
+	if (time_state == 4)
+	{
+		return reslut_list;
 	}
 	reslut_list.push_back(time_startexg);
 	tm* tm_temp = localtime(&time_startexg);
@@ -739,8 +745,9 @@ int main()
 	//int ExgPerSeconds = 36000;
 	//
 	int add_min = 4;
-	//cout << "请输入交易间隔时间(单位：秒)..." << endl;
-	//cin >> ExgPerSeconds;
+	cout << "单账户占用交易时间份数(1==》所有交易时间，0.5==》一半时间)：" << endl;
+	double part_time = 1;
+	cin >> part_time;
 	//交易仓位
 	double position = 1;
 	cout << "持仓股票数目：" << positionNum << endl;
@@ -799,11 +806,12 @@ int main()
 		map_v_buy = tapi_1.ComputeBuyPerMin(m_buy_list, ExgValue);
 		map_v_sell = tapi_1.ComputeSellPerMin(m_sell_list, ExgValue);
 		int max_ser;
-		int ExgPerSeconds = tapi_1.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser);
+		int ExgPerSeconds = tapi_1.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
 		vector<time_t> exgtime_list = tapi_1.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
+		if (!exgtime_list.empty())
+			tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
 		cout << "309219037550" << "交易完成" << endl;
-		if (!(buy_list_1.empty() && buy_list_1.empty()))
+		if (!(exgtime_list.empty()))
 		{
 			cout << "等待下一个账户交易" << endl;
 			Sleep(ExgPerSeconds * 1000);
@@ -845,12 +853,13 @@ int main()
 		map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
 
 		int max_ser;
-		int ExgPerSeconds = tapi.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser);
+		int ExgPerSeconds = tapi.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
 		vector<time_t> exgtime_list = tapi.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
-
+		if (!exgtime_list.empty())
+			tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
+		
 		cout << "309719208370" << "交易完成" << endl;
-		if (!(buy_list.empty() && sell_list.empty()))
+		if (!(exgtime_list.empty()))
 		{
 			cout << "等待下一个账户交易" << endl;
 			Sleep(ExgPerSeconds * 1000);
@@ -892,12 +901,13 @@ int main()
 		map_v_sell = tapi_2.ComputeSellPerMin(m_sell_list, ExgValue);
 
 		int max_ser;
-		int ExgPerSeconds = tapi_2.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser);
+		int ExgPerSeconds = tapi_2.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
 		vector<time_t> exgtime_list = tapi_2.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		tapi_2.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
+		if (!exgtime_list.empty())
+			tapi_2.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
 
 		cout << "309219088510" << "交易完成" << endl;
-		if (!(buy_list.empty() && sell_list.empty()))
+		if (!exgtime_list.empty())
 		{
 			cout << "等待下一个账户交易" << endl;
 			Sleep(ExgPerSeconds * 1000);
@@ -940,9 +950,10 @@ int main()
 		map_v_sell = tapi_3.ComputeSellPerMin(m_sell_list, ExgValue);
 
 		int max_ser;
-		int ExgPerSeconds = tapi_3.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser);
+		int ExgPerSeconds = tapi_3.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
 		vector<time_t> exgtime_list = tapi_3.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		tapi_3.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
+		if (!exgtime_list.empty())
+			tapi_3.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
 
 		cout << "309219171085" << "交易完成" << endl;
 	}
