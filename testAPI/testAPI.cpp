@@ -611,11 +611,10 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 		exg_seconds = (time_end - time_now) * part_time;
 	}
 
-	if (time_state == 4)
+	if (time_state == 4 || max_ser_num == 0)
 	{
 		return 36000;
 	}
-
 	return floor(exg_seconds / max_ser_num);
 }
 
@@ -691,7 +690,7 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max
 		time_startexg = time_startexg + perSeconds;
 		if (Toolkit::T_isExgTme(time_startexg, add_min) == 2)
 		{
-			time_startexg = time_now + floor(perSeconds / 2) + 1.5 * 3600;
+			time_startexg = time_startexg + floor(perSeconds / 2) + 1.5 * 3600;
 		}
 		tm* tm_temp = localtime(&time_startexg);
 		cout << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
