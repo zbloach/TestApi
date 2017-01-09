@@ -813,7 +813,7 @@ int main()
 		if (!(exgtime_list.empty()))
 		{
 			cout << "等待下一个账户交易" << endl;
-			Sleep(ExgPerSeconds * 1000);
+			Sleep(floor(ExgPerSeconds / 2));
 		}
 	}
 	tapi_1.~testAPI();
@@ -861,7 +861,7 @@ int main()
 		if (!(exgtime_list.empty()))
 		{
 			cout << "等待下一个账户交易" << endl;
-			Sleep(ExgPerSeconds * 1000);
+			Sleep(floor(ExgPerSeconds / 2));
 		}
 	}
 	//析构
@@ -909,7 +909,7 @@ int main()
 		if (!exgtime_list.empty())
 		{
 			cout << "等待下一个账户交易" << endl;
-			Sleep(ExgPerSeconds * 1000);
+			Sleep(floor(ExgPerSeconds / 2));
 		}
 	}
 	//析构
