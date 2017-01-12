@@ -37,6 +37,9 @@ public:
 	void test();
 
 	double return_value();
+	//普通下单或换仓加仓
+	int Ini_exg(string ip,int port,vector<string> id_list, vector<string> key_list, vector<string> exgfile_list, 
+		vector<double> Retained_funds_list,double position,int positionNum, double ExgValue, double min_exgMoney,int add_min,double part_time);
 
 private:
 	//vector<string> m_sell_list;

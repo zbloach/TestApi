@@ -1,5 +1,7 @@
 #include "testAPI.h"
 
+#include "ThostFtdcTraderApi.h"
+
 testAPI::testAPI()
 {
 
@@ -53,6 +55,7 @@ testAPI::~testAPI()
 }
 //positionNum   股票只数
 //min_exgMoney  最小交易金额
+//position 交易仓位，1全仓,0.5半仓
 bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list,double min_exgMoney)
 {
 	//记录最新价格信息
@@ -428,124 +431,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 			
 		}
 	} while (ser_num < max_ser_num);
-	/*
-	do
-	{
-		tm_now = localtime(&time_now);
-		//非交易时段
-		//if (!Toolkit::T_isExgTme(time_now, add_min))
-		time_state = Toolkit::T_isExgTme(time_now, add_min);
-		if (time_state == 0 || time_state == 2)
-		{
-			cout << "时间： " << tm_now->tm_hour << ":" << tm_now->tm_min << ":" << tm_now->tm_sec << endl;
-			//非交易时段
-			cout << "非交易时段" << endl;
-			Sleep(15000);
-			//重置开始时间
-			time_num = 0;
-			//重新更新时间
-			time(&time_now);
-			//time_start = time_now;
-		}
-		else //交易时段
-		{
-			//到达下一次交易时间，开始交易
-			if (time_now >= time_exg)
-			{
 
-				sell_iter = sell_list_num.begin();
-				buy_iter = buy_list_num.begin();
-				for (sell_iter, buy_iter; sell_iter != sell_list_num.end() || buy_iter != buy_list_num.end();)
-				{
-					//遍历卖出列表中的股票,一次遍历所有股票，执行其中的一次交易次数
-					//if (exg_ser < sell_size)
-					//卖出列表的股票还没遍历完
-					if (sell_iter != sell_list_num.end())
-					{
-						//实际交易的次数是否超过总交易次数
-						if (ser_num < sell_iter->second.size())
-						{
-							//交易量初值
-							not_exg_num = sell_iter->second[ser_num];
-							error_time = 0;
-							//获取价格
-							if (!tdApi.get_price_tx(sell_iter->first, sp))
-							{
-								Sleep(3600000);
-								return false;
-							}
-							//获取时间
-							time(&time_temp);
-							tm_temp = localtime(&time_temp);
-							cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
-							cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股" << endl;
-							//9代表买5位置，0代表的价格，1代表数量
-							//tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
-						}
-						//下一只股票
-						sell_iter++;
-					}
-
-					//遍历买入列表中的股票
-					if (buy_iter != buy_list_num.end())
-					{
-						if (ser_num < buy_iter->second.size())
-						{
-							//交易量初值
-							not_exg_num = buy_iter->second[ser_num];
-							error_time = 0;
-
-							if (!tdApi.get_price_tx(buy_iter->first, sp))
-							{
-								Sleep(3600000);
-								return false;
-							}
-							//获取时间
-							time(&time_temp);
-							tm_temp = localtime(&time_temp);
-							cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
-							cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
-							//0代表卖5位置，0代表的价格，1代表数量
-							//tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
-						}
-						//下一只股票
-						buy_iter++;
-					}
-				}
-				//完成一轮交易
-				ser_num++;
-				//下一次交易时间
-				time_num++;
-				cout << endl;
-			}
-			else //没到达下一次交易时间，继续等待，更新当前时间
-			{
-				time(&time_temp);
-				tm_temp = localtime(&time_temp);
-				if (jilu_min != tm_temp->tm_min)
-				{
-					//输出更新时间
-					cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
-					jilu_min = tm_temp->tm_min;
-				}
-				//cout << "等待下一次交易周期" << endl;
-			}
-			//本轮交易完成，重置下一次交易时间
-			
-			//重新更新时间
-			time(&time_now);
-		}
-		//下次交易时间
-		time_exg = time_start + ser_num * perSeconds;
-		tm_exg = localtime(&time_exg);
-		//cout << "下次交易时间： " << tm_exg->tm_hour << ":" << tm_exg->tm_min << ":" << tm_exg->tm_sec << endl;
-		if (time_now - time_exg > (ser_num + 1)*perSeconds)
-		{
-			//越过一次周期时间，重置开始时间
-			time_start = time_now;
-		}
-	} while (ser_num < max_ser_num);
-	*/
 	cout << "交易完毕" << endl;
 	return true;
 }
@@ -699,9 +585,91 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max
 	return reslut_list;
 }
 
+int testAPI::Ini_exg(string ip, int port, vector<string> id_list, vector<string> key_list, vector<string> exgfile_list, vector<double> Retained_funds_list,
+	double position, int positionNum, double ExgValue, double min_exgMoney, int add_min, double part_time)
+{
+	bool result_1 = false;
+	//文件操作
+	//记录市值数据
+	ofstream fileout("D:\\ExgFile\\total_value.txt", ios::trunc);
+	if (!fileout)
+	{
+		cout << "Create file failure...\n";
+		exit(0);
+	}
+
+	//获取hs300指数的最新价格
+	TradeApi tradeapi_0;
+	StockPrice sp;
+	tradeapi_0.get_price_tx("000300", sp);
+	fileout << sp.NewPrice << endl;
+	vector<double> money_list;
+	for (int i = 0; i < id_list.size(); i++)
+	{
+		
+		result_1 = this->Init(ip, port, "", "0", id_list[i], key_list[i]);
+		if (result_1)
+		{
+			money_list.push_back(this->return_value());
+			vector<string> sell_list_1, buy_list_1;
+			this->readExgList(exgfile_list[i], buy_list_1, sell_list_1);
+			map<string, int> m_buy_list, m_sell_list;
+			this->ComputeBuyStockNum(Retained_funds_list[i], position, positionNum, buy_list_1, m_buy_list, min_exgMoney);
+			this->ComputeSellStockNum(sell_list_1, m_sell_list);
+
+			cout << endl;
+			cout << "卖出股票列表:" << endl;
+			for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
+			{
+				cout << iter_0->first << ":" << iter_0->second << endl;
+			}
+			cout << endl;
+			cout << "买入股票列表:" << endl;
+			for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
+			{
+				cout << iter_0->first << ":" << iter_0->second << endl;
+			}
+			cout << endl;
+
+			map<string, vector<int>> map_v_buy, map_v_sell;
+			map_v_buy = this->ComputeBuyPerMin(m_buy_list, ExgValue);
+			map_v_sell = this->ComputeSellPerMin(m_sell_list, ExgValue);
+			int max_ser;
+			int ExgPerSeconds = this->ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
+			vector<time_t> exgtime_list = this->ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
+			if (!exgtime_list.empty())
+				this->ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
+			cout << id_list[i] << "交易完成" << endl;
+			if (i != id_list.size() - 1 && !(exgtime_list.empty()))
+			{
+				cout << "等待下一个账户交易" << endl;
+				Sleep(floor(ExgPerSeconds / 2));
+			}
+		}
+		//this->~testAPI();
+		cout << endl;
+	}
+
+	vector<double>::iterator iter0;
+	int i = 0;
+	double total_value = 0;
+	for (iter0 = money_list.begin(); iter0 != money_list.end(); iter0++, i++)
+	{
+		cout << std::fixed << money_list[i] << endl;
+		fileout << std::fixed << money_list[i] << endl;
+		total_value = total_value + money_list[i];
+	}
+	cout << total_value << endl;
+
+
+	Sleep(3600000);
+	//文件关闭
+	fileout.close();
+	return 0;
+}
+
 int main()
 {
-	vector<double> money_list;
 	cout << "版本号：" << "1_2" << endl;
 	//ip地址列表
 	map<string, int> map_ip_p;
@@ -754,227 +722,34 @@ int main()
 	cout << "最小买入金额：" << min_exgMoney << endl;
 	//cout << "交易间隔时间：" << ExgPerSeconds <<"秒"<< endl;
 	Sleep(1000);
-	bool result_1 = false;
-
-	//文件操作
-	//记录市值数据
-	ofstream fileout("D:\\ExgFile\\total_value.txt", ios::trunc);
-	if (!fileout)
-	{
-		cout << "Create file failure...\n";
-		exit(0);
-	}
-
-	//获取hs300指数的最新价格
-	TradeApi tradeapi_0;
-	StockPrice sp;
-	tradeapi_0.get_price_tx("000300", sp);
-	fileout << sp.NewPrice << endl;
-
-	//操作1_ExgFile_zyj账户
 	
+
+	
+	//帐号列表，密码列表，交易信息列表
+	vector<string> id_list,key_list,exgfile_list;
+	id_list.push_back("309219037550");
+	id_list.push_back("309719208370");
+	id_list.push_back("309219088510");
+	id_list.push_back("309219171085");
+
+	key_list.push_back("651086");
+	key_list.push_back("651086");
+	key_list.push_back("651086");
+	key_list.push_back("651086");
+
+	exgfile_list.push_back("D:\\ExgFile\\1_ExgFile_zyj.txt");
+	exgfile_list.push_back("D:\\ExgFile\\4_ExgFile_zb.txt");
+	exgfile_list.push_back("D:\\ExgFile\\8_ExgFile_jcp.txt");
+	exgfile_list.push_back("D:\\ExgFile\\10_ExgFile_zjj.txt");
+
+	vector<double> Retained_funds_list;
+	Retained_funds_list.push_back(250000);
+	Retained_funds_list.push_back(250000);
+	Retained_funds_list.push_back(250000);
+	Retained_funds_list.push_back(250000);
+
 	testAPI tapi_1;
-	result_1 = tapi_1.Init(selectedIP, port, "", "0", "309219037550", "651086");
-	if (result_1)
-	{
-		money_list.push_back(tapi_1.return_value());
-		//账户留存资金
-		double Retained_funds = 250000;
-		vector<string> sell_list_1, buy_list_1;
-		//tapi_1.test();
-		tapi_1.readExgList("D:\\ExgFile\\1_ExgFile_zyj.txt", buy_list_1, sell_list_1);
-		map<string, int> m_buy_list, m_sell_list;
-		tapi_1.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list_1, m_buy_list, min_exgMoney);
-		tapi_1.ComputeSellStockNum(sell_list_1, m_sell_list);
-
-		cout << endl;
-		cout << "卖出股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-		cout << "买入股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-
-		map<string, vector<int>> map_v_buy, map_v_sell;
-		map_v_buy = tapi_1.ComputeBuyPerMin(m_buy_list, ExgValue);
-		map_v_sell = tapi_1.ComputeSellPerMin(m_sell_list, ExgValue);
-		int max_ser;
-		int ExgPerSeconds = tapi_1.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
-		vector<time_t> exgtime_list = tapi_1.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		if (!exgtime_list.empty())
-			tapi_1.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
-		cout << "309219037550" << "交易完成" << endl;
-		if (!(exgtime_list.empty()))
-		{
-			cout << "等待下一个账户交易" << endl;
-			Sleep(floor(ExgPerSeconds / 2));
-		}
-	}
-	tapi_1.~testAPI();
-	cout << endl;
-
-	//操作4_ExgFile_zb账户
-	
-	testAPI tapi;
-	result_1 = tapi.Init(selectedIP, port, "", "0", "309719208370", "651086");
-	if (result_1)
-	{
-		money_list.push_back(tapi.return_value());
-		double Retained_funds = 250000;
-		vector<string> sell_list, buy_list;
-		tapi.readExgList("D:\\ExgFile\\4_ExgFile_zb.txt", buy_list, sell_list);
-		map<string, int> m_buy_list, m_sell_list;
-		tapi.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list, min_exgMoney);
-		tapi.ComputeSellStockNum(sell_list, m_sell_list);
-
-		cout << endl;
-		cout << "卖出股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-		cout << "买入股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-
-		map<string, vector<int>> map_v_buy, map_v_sell;
-		map_v_buy = tapi.ComputeBuyPerMin(m_buy_list, ExgValue);
-		map_v_sell = tapi.ComputeSellPerMin(m_sell_list, ExgValue);
-
-		int max_ser;
-		int ExgPerSeconds = tapi.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
-		vector<time_t> exgtime_list = tapi.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		if (!exgtime_list.empty())
-			tapi.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
-		
-		cout << "309719208370" << "交易完成" << endl;
-		if (!(exgtime_list.empty()))
-		{
-			cout << "等待下一个账户交易" << endl;
-			Sleep(floor(ExgPerSeconds / 2));
-		}
-	}
-	//析构
-	tapi.~testAPI();
-	cout << endl;
-	
-	//操作8_ExgFile_jcp账户
-	testAPI tapi_2;
-	result_1 = tapi_2.Init(selectedIP, port, "", "0", "309219088510", "651086");
-	if (result_1)
-	{
-		money_list.push_back(tapi_2.return_value());
-		double Retained_funds = 250000;
-		vector<string> sell_list, buy_list;
-		tapi_2.readExgList("D:\\ExgFile\\8_ExgFile_jcp.txt", buy_list, sell_list);
-		map<string, int> m_buy_list, m_sell_list;
-		tapi_2.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list, min_exgMoney);
-		tapi_2.ComputeSellStockNum(sell_list, m_sell_list);
-
-		cout << endl;
-		cout << "卖出股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-		cout << "买入股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-
-		map<string, vector<int>> map_v_buy, map_v_sell;
-		map_v_buy = tapi_2.ComputeBuyPerMin(m_buy_list, ExgValue);
-		map_v_sell = tapi_2.ComputeSellPerMin(m_sell_list, ExgValue);
-
-		int max_ser;
-		int ExgPerSeconds = tapi_2.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
-		vector<time_t> exgtime_list = tapi_2.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		if (!exgtime_list.empty())
-			tapi_2.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
-
-		cout << "309219088510" << "交易完成" << endl;
-		if (!exgtime_list.empty())
-		{
-			cout << "等待下一个账户交易" << endl;
-			Sleep(floor(ExgPerSeconds / 2));
-		}
-	}
-	//析构
-	tapi_2.~testAPI();
-	cout << endl;
-	
-	//操作10_ExgFile_zjj账户
-
-	testAPI tapi_3;
-	result_1 = tapi_3.Init(selectedIP, port, "", "0", "309219171085", "651086");
-	if (result_1)
-	{
-		money_list.push_back(tapi_3.return_value());
-		double Retained_funds = 250000;
-		vector<string> sell_list, buy_list;
-		tapi_3.readExgList("D:\\ExgFile\\10_ExgFile_zjj.txt", buy_list, sell_list);
-		map<string, int> m_buy_list, m_sell_list;
-		tapi_3.ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list, m_buy_list, min_exgMoney);
-		tapi_3.ComputeSellStockNum(sell_list, m_sell_list);
-
-		cout << endl;
-		cout << "卖出股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_sell_list.begin(); iter_0 != m_sell_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-		cout << "买入股票列表:" << endl;
-		for (map<string, int>::iterator iter_0 = m_buy_list.begin(); iter_0 != m_buy_list.end(); iter_0++)
-		{
-			cout << iter_0->first << ":" << iter_0->second << endl;
-		}
-		cout << endl;
-
-		map<string, vector<int>> map_v_buy, map_v_sell;
-		map_v_buy = tapi_3.ComputeBuyPerMin(m_buy_list, ExgValue);
-		map_v_sell = tapi_3.ComputeSellPerMin(m_sell_list, ExgValue);
-
-		int max_ser;
-		int ExgPerSeconds = tapi_3.ComputePerSeconds(map_v_buy, map_v_sell, add_min, max_ser, part_time);
-		vector<time_t> exgtime_list = tapi_3.ComputeExgtime_list(ExgPerSeconds, add_min, max_ser);
-		if (!exgtime_list.empty())
-			tapi_3.ExgPerMin(ExgPerSeconds, ExgValue, map_v_buy, map_v_sell, add_min, max_ser, exgtime_list);
-
-		cout << "309219171085" << "交易完成" << endl;
-	}
-	//析构
-	tapi_3.~testAPI();
-	cout << endl;
-	vector<double>::iterator iter0;
-	int i = 0;
-	double total_value = 0;
-	for (iter0 = money_list.begin(); iter0 != money_list.end(); iter0++, i++)
-	{
-		cout << std::fixed << money_list[i] << endl;
-		fileout << std::fixed << money_list[i] << endl;
-		total_value = total_value + money_list[i];
-	}
-	cout << total_value << endl;
-	//fileout << total_value << endl;
-	
-	
-	Sleep(3600000);
-	//文件关闭
-	fileout.close();
+	tapi_1.Ini_exg(selectedIP, port, id_list, key_list, exgfile_list, Retained_funds_list, position, positionNum, ExgValue, min_exgMoney,add_min,part_time);
 	return 0;
 }
 
