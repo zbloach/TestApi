@@ -38,6 +38,9 @@ public:
 
 	double return_value();
 
+	int init_exg(string ip, int port, vector<string> id_list, vector<string> key_list,vector<string> exgfile_list, vector<double> Retained_funds_list, 
+		double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue);
+
 private:
 	//vector<string> m_sell_list;
 	//vector<string> m_buy_list;
