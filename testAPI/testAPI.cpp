@@ -549,10 +549,11 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 	time(&time_now);
 	//总的交易持续时间
 	int exg_seconds = 0;
-	int time_state = Toolkit::T_isExgTme(time_now, add_min);
+	int time_state = Toolkit::T_isExgTme(time_now);
 	if (time_state == 0)
 	{
-		exg_seconds = (4 * 3600 - add_min * 60) * part_time;
+		//抛开两次收盘的最后一分钟，抛开下午开盘的第一分钟
+		exg_seconds = (4 * 3600 - 120 - 60) * part_time;
 	}
 	
 	tm* tm_now = localtime(&time_now);
@@ -566,17 +567,20 @@ int testAPI::ComputePerSeconds(map<string, vector<int>> buy_list_num, map<string
 
 	if (time_state == 1)
 	{
-		exg_seconds = (time_end - time_now - 1.5 * 3600 - add_min * 60) * part_time;
+		//抛开两次收盘的最后一分钟，抛开下午开盘的第一分钟
+		exg_seconds = (time_end - time_now - 1.5 * 3600 - 120 - 60) * part_time;
 	}
 
 	if (time_state == 2)
 	{
-		exg_seconds = (2 * 3600 - add_min * 60) * part_time;
+		//抛开下午收盘的最后一分钟，抛开下午开盘的第一分钟
+		exg_seconds = (2 * 3600 - 60 - 60) * part_time;
 	}
 
 	if (time_state == 3)
 	{
-		exg_seconds = (time_end - time_now) * part_time;
+		//抛开下午收盘的最后一分钟
+		exg_seconds = (time_end - time_now- 60) * part_time;
 	}
 
 	if (time_state == 4 || max_ser_num == 0)
@@ -602,7 +606,7 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max
 	tm* tm_now = localtime(&time_now);
 	tm tm_start0 = *tm_now;
 	tm_start0.tm_hour = 9;
-	tm_start0.tm_min = 30 + add_min;
+	tm_start0.tm_min = 30;
 	tm_start0.tm_sec = 0;
 	
 	//上午开盘时间
@@ -610,28 +614,29 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max
 
 	//tm_start = *tm_now;
 	//上午开盘之前
-	int time_state = Toolkit::T_isExgTme(time_now, add_min);
+	int time_state = Toolkit::T_isExgTme(time_now);
 	if (time_state == 0)
 	{
 		time_startexg = time_start0 + floor(perSeconds / 2);
 	}
+	//下午开盘时间
+	tm tm_start1 = *tm_now;
+	tm_start1.tm_hour = 13;
+	tm_start1.tm_min = 00;
+	tm_start1.tm_sec = 0;
+	time_start1 = mktime(&tm_start1);
+
 	//上午已经开盘
 	if (time_state == 1)
 	{
 		time_startexg = time_now + floor(perSeconds / 2);
 		//开始交易时间为午盘休息
-		if (Toolkit::T_isExgTme(time_startexg, add_min) == 2)
+		if (Toolkit::T_isExgTme(time_startexg) == 2)
 		{
-			time_startexg = time_now + floor(perSeconds / 2) + 1.5 * 3600;
+			time_startexg = time_start1 + floor(perSeconds / 2);
 		}
 	}
 	
-	tm tm_start1 = *tm_now;
-	tm_start1.tm_hour = 13;
-	tm_start1.tm_min = 00 + add_min;
-	tm_start1.tm_sec = 0;
-	//下午开盘时间
-	time_start1 = mktime(&tm_start1);
 	//午盘休息
 	if (time_state == 2)
 	{
@@ -656,11 +661,14 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max
 	while (reslut_list.size() < max_ser)
 	{
 		time_startexg = time_startexg + perSeconds;
-		if (Toolkit::T_isExgTme(time_startexg, add_min) == 2)
+		tm_temp = localtime(&time_startexg);
+		cout <<"测试"<< tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
+		if (Toolkit::T_isExgTme(time_startexg) == 2)
 		{
-			time_startexg = time_startexg + floor(perSeconds / 2) + 1.5 * 3600;
+			//需要多补充一个早盘最后一分钟,还有下午开盘的第一分钟
+			time_startexg = time_startexg + 1.5 * 3600 + 120;
 		}
-		tm* tm_temp = localtime(&time_startexg);
+		tm_temp = localtime(&time_startexg);
 		cout << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 		reslut_list.push_back(time_startexg);
 	}
