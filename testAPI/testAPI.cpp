@@ -53,7 +53,7 @@ testAPI::~testAPI()
 }
 //positionNum   股票只数
 //min_exgMoney  最小交易金额
-bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list,double min_exgMoney)
+bool testAPI::ComputeBuyStockNum(double retainedf, double position, int positionNum, vector<string> v_buy_list, map<string, int>& m_buy_list, double min_exgMoney)
 {
 	//记录最新价格信息
 	map<string, double> map_sp;
@@ -126,6 +126,138 @@ bool testAPI::ComputeBuyStockNum(double retainedf,double position, int positionN
 		return true;
 	}
 	cout << "计算买入股票数量失败" << endl;
+	return false;
+}
+
+bool testAPI::ComputeFitStockNum(double retainedf, double position, int positionNum, map<string, int>& fit_map, int& deriction, double min_exgMoney)
+{
+	//记录最新价格信息
+	//map<string, double> map_sp;
+	//计算买入数量
+	fit_map.clear();
+	AccountInfo acinfo;
+	//总差值
+	double total_diff = 0;
+	//账户信息
+	if (tdApi.QueryAccountMoney(acinfo))
+	{
+		double realMoney = acinfo.totalValue - retainedf;
+		if (realMoney < 0)
+		{
+			realMoney = 0;
+		}
+		double totalValue = realMoney * 0.95 * position;
+		int i = 0;
+		StockPrice sp;
+		int stockNum;
+		double price;
+
+		map<string, int> position_map;
+		tdApi.QueryPosition(position_map);
+		map<string, int>::iterator map_iter;
+		for (map_iter = position_map.begin(); map_iter != position_map.end(); map_iter++)
+		{
+			if (!tdApi.get_price_tx(map_iter->first, sp))
+			{
+				return false;
+			}
+			price = sp.NewPrice;
+			stockNum = 0;
+			stockNum = (int)(totalValue / positionNum / price / 100) * 100;
+			fit_map.insert(make_pair(map_iter->first, stockNum));
+			//计算总差值
+			total_diff = total_diff + (stockNum - map_iter->second) * price;
+			
+		}
+		if (total_diff > min_exgMoney * positionNum)
+		{
+			deriction = 1;
+		} 
+		else 
+			if (total_diff < -1 * min_exgMoney * positionNum)
+			{
+				deriction = -1;
+			}
+			else
+			{
+				deriction = 0;
+			}
+		return true;
+	}
+	cout << "根据最新资金情况计算适宜的股票数量失败" << endl;
+	return false;
+}
+
+
+
+bool testAPI::ComputeExgToFitStockNum(int deriction, map<string, int> fit_map, map<string, int>& toFit_map, double min_exgMoney)
+{
+	toFit_map.clear();
+	map<string, int> position_map;
+	tdApi.QueryPosition(position_map);
+	map<string, int>::iterator iter,iter_temp;
+	
+	if (deriction == 1)
+	{
+		for (iter = position_map.begin(); iter != position_map.end(); iter++)
+		{
+			iter_temp = fit_map.find(iter->first);
+			StockPrice sp;
+			tdApi.get_price_tx(iter->first, sp);
+			int exg_num = iter_temp->second - iter->second;
+			if (sp.NewPrice * exg_num > min_exgMoney)
+			{
+				toFit_map.insert(make_pair(iter->first, exg_num));
+			}
+			
+		}
+		return true;
+	} 
+	else
+		if (deriction == -1)
+		{
+		for (iter = position_map.begin(); iter != position_map.end(); iter++)
+			{
+				iter_temp = fit_map.find(iter->first);
+				StockPrice sp;
+				tdApi.get_price_tx(iter->first, sp);
+				int exg_num = iter->second - iter_temp->second;
+				if (sp.NewPrice * exg_num > min_exgMoney)
+				{
+					toFit_map.insert(make_pair(iter->first, exg_num));
+				}
+				
+			}
+			return true;
+		}
+	return false;
+}
+
+bool testAPI::MergeExgList(int deriction, map<string, int>& map_buy_list, map<string, int>& map_sell_list, map<string, int> toFit_map)
+{
+	map<string, int>::iterator iter;
+	if (deriction == 1)
+	{
+		for (iter = toFit_map.begin(); iter != toFit_map.end();iter++)
+		{
+			//不包含再添加
+			if (map_buy_list.find(iter->first) == map_buy_list.end())
+			{
+				map_buy_list.insert(make_pair(iter->first, iter->second));
+			}
+			
+		}
+	}
+	if (deriction == -1)
+	{
+		for (iter = toFit_map.begin(); iter != toFit_map.end(); iter++)
+		{
+			if (map_sell_list.find(iter->first) == map_sell_list.end())
+			{
+				map_sell_list.insert(make_pair(iter->first, iter->second));
+			}
+		}
+	}
 	return false;
 }
 
@@ -440,7 +572,7 @@ double testAPI::return_value()
 }
 
 int testAPI::init_exg(string ip, int port, vector<string> id_list, vector<string> key_list, vector<string> exgfile_list, vector<double> Retained_funds_list,
-	double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue)
+	double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue, bool reduce)
 {
 
 	//文件操作
@@ -468,13 +600,26 @@ int testAPI::init_exg(string ip, int port, vector<string> id_list, vector<string
 		{
 			money_list.push_back(this->return_value());
 			//账户留存资金
-			double Retained_funds = 250000;
+			double Retained_funds = Retained_funds_list[i];
 			vector<string> sell_list_1, buy_list_1;
 			
 			this->readExgList(exgfile_list[i], buy_list_1, sell_list_1);
 			map<string, int> m_buy_list, m_sell_list;
 			this->ComputeBuyStockNum(Retained_funds, position, positionNum, buy_list_1, m_buy_list, min_exgMoney);
 			this->ComputeSellStockNum(sell_list_1, m_sell_list);
+			//需要根据资金情况重新调整股票数量
+			if (reduce)
+			{
+				int deriction = 0;
+				map<string, int> m_fit_list, m_tofit_list;
+				this->ComputeFitStockNum(Retained_funds, position, positionNum, m_fit_list, deriction,min_exgMoney);
+				if (deriction != 0)
+				{
+					this->ComputeExgToFitStockNum(deriction, m_fit_list, m_tofit_list, min_exgMoney);
+					this->MergeExgList(deriction, m_buy_list, m_sell_list, m_tofit_list);
+				}
+
+			}
 
 			cout << endl;
 			cout << "卖出股票列表:" << endl;
@@ -662,7 +807,6 @@ vector<time_t> testAPI::ComputeExgtime_list(int perSeconds, int add_min, int max
 	{
 		time_startexg = time_startexg + perSeconds;
 		tm_temp = localtime(&time_startexg);
-		cout <<"测试"<< tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 		if (Toolkit::T_isExgTme(time_startexg) == 2)
 		{
 			//需要多补充一个早盘最后一分钟,还有下午开盘的第一分钟
@@ -757,8 +901,9 @@ int main()
 	exgfile_list.push_back("D:\\ExgFile\\10_ExgFile_zjj.txt");
 
 	testAPI tapi;
+	bool reduce = true;
 	tapi.init_exg(selectedIP, port, id_list, key_list, exgfile_list, Retained_funds_list, position, positionNum, add_min
-		, min_exgMoney, part_time, ExgValue);
+		, min_exgMoney, part_time, ExgValue, reduce);
 	Sleep(3600000);
 	return 0;
 }

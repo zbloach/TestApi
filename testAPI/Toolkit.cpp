@@ -90,7 +90,7 @@ int Toolkit::T_isExgTme(const time_t testtime)
 	tm_start0.tm_sec = 0;
 	time_start0 = mktime(&tm_start0);
 	time_end0 = time_start0 + 2 * 3600 - 60;//抛开最后一分钟
-	time_start1 = time_start0 + 4 * 3600;
+	time_start1 = time_start0 + 3.5 * 3600;
 	time_end1 = time_start1 + 2 * 3600 - 60;//抛开最后一分钟
 
 	if (testtime < time_start0)
