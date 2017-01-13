@@ -77,7 +77,7 @@ bool Toolkit::T_isNum(string str)
 	*/
 }
 
-int Toolkit::T_isExgTme(const time_t testtime, int add_min)
+int Toolkit::T_isExgTme(const time_t testtime)
 {
 	//time_t time_now;
 	//time(&time_now);
@@ -86,12 +86,12 @@ int Toolkit::T_isExgTme(const time_t testtime, int add_min)
 	tm tm_start0 = *tm_testtime;
 	time_t time_start0,time_end0,time_start1,time_end1;
 	tm_start0.tm_hour = 9;
-	tm_start0.tm_min = 30 + add_min;
+	tm_start0.tm_min = 30;
 	tm_start0.tm_sec = 0;
 	time_start0 = mktime(&tm_start0);
-	time_end0 = time_start0 + 2 * 3600 - add_min * 60;
-	time_start1 = time_end0 + 1.5 * 3600 + add_min * 60;
-	time_end1 = time_start1 + 2 * 3600 - add_min * 60;
+	time_end0 = time_start0 + 2 * 3600 - 60;//抛开最后一分钟
+	time_start1 = time_start0 + 4 * 3600;
+	time_end1 = time_start1 + 2 * 3600 - 60;//抛开最后一分钟
 
 	if (testtime < time_start0)
 	{
