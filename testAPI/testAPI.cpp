@@ -350,6 +350,7 @@ bool testAPI::BuyNewStock()
 		{
 			result = "";
 			tdApi.buy_stock(iter_map->first, iter_map->second[0], iter_map->second[1], result);
+			cout << "Éê¹ºÐÂ¹É:" << iter_map->first << endl;
 		}
 		
 	}
