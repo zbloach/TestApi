@@ -92,27 +92,27 @@ int Toolkit::T_isExgTme(const time_t testtime)
 	time_end0 = time_start0 + 2 * 3600 - 60;//抛开最后一分钟
 	time_start1 = time_start0 + 3.5 * 3600;
 	time_end1 = time_start1 + 2 * 3600 - 60;//抛开最后一分钟
-
+	//开盘前
 	if (testtime < time_start0)
 	{
 		return 0;
 	}
-
+	//上午开盘
 	if (testtime >= time_start0 && testtime < time_end0)
 	{
 		return 1;
 	}
-
+	//中午休市
 	if (testtime >= time_end0 && testtime < time_start1)
 	{
 		return 2;
 	}
-
+	//下午开盘
 	if (testtime >= time_start1 && testtime < time_end1)
 	{
 		return 3;
 	}
-
+	//下午收盘
 	if (testtime >= time_end1)
 	{
 		return 4;

@@ -52,7 +52,7 @@ public:
 	//普通下单，换仓操作
 	//reduce  true：如果总资金减少，则降低当前持有的股票数量
 	int init_exg(string ip, int port, vector<string> id_list, vector<string> key_list,vector<string> exgfile_list, vector<double> Retained_funds_list, 
-		double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue, bool reduce);
+		double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue, bool reduce, bool buyNewStock);
 	//调整仓位，减仓或
 private:
 	//vector<string> m_sell_list;

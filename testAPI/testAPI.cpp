@@ -336,13 +336,22 @@ bool testAPI::BuyNewStock()
 		cout << "当日没有新股申购" << endl;
 		return true;
 	}
-	vector<EnstrustInfo> EntrustList;
-	this->tdApi.QueryEntrust(EntrustList);
+	
 
-	time_t
-
-	if ()
+	time_t time_now;
+	//当前时间
+	time(&time_now);
+	//可申购新股时间
+	if (Toolkit::T_isExgTme(time_now) == 2 || Toolkit::T_isExgTme(time_now) == 3)
 	{
+		string result;
+		map<string, vector<double>>::iterator iter_map;
+		for (iter_map = newStock_list.begin(); iter_map != newStock_list.end(); iter_map++)
+		{
+			result = "";
+			tdApi.buy_stock(iter_map->first, iter_map->second[0], iter_map->second[1], result);
+		}
+		
 	}
 }
 
@@ -594,7 +603,7 @@ double testAPI::return_value()
 }
 
 int testAPI::init_exg(string ip, int port, vector<string> id_list, vector<string> key_list, vector<string> exgfile_list, vector<double> Retained_funds_list,
-	double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue, bool reduce)
+	double position, int positionNum, int add_min, double min_exgMoney, double part_time, double ExgValue, bool reduce,bool buyNewStock)
 {
 
 	//文件操作
@@ -620,6 +629,11 @@ int testAPI::init_exg(string ip, int port, vector<string> id_list, vector<string
 		result_1 = this->Init(ip, port, "", "0", id_list[i], key_list[i]);
 		if (result_1)
 		{
+			if (buyNewStock)
+			{
+				this->BuyNewStock();
+			}
+			
 			money_list.push_back(this->return_value());
 			//账户留存资金
 			double Retained_funds = Retained_funds_list[i];
@@ -889,6 +903,9 @@ int main()
 	cout << "单账户占用交易时间份数(1==》所有交易时间，0.5==》一半时间)：" << endl;
 	double part_time = 1;
 	cin >> part_time;
+	cout << "是否申购新股(1,申购，0,不申购)" << endl;
+	int buyNew = 0;
+	cin >> buyNew;
 	//交易仓位
 	double position = 1;
 	cout << "持仓股票数目：" << positionNum << endl;
@@ -922,10 +939,15 @@ int main()
 	exgfile_list.push_back("D:\\ExgFile\\8_ExgFile_jcp.txt");
 	exgfile_list.push_back("D:\\ExgFile\\10_ExgFile_zjj.txt");
 
+	bool buyNewStock = false;
+	if (buyNew == 1)
+	{
+		buyNewStock = true;
+	}
 	testAPI tapi;
 	bool reduce = true;
 	tapi.init_exg(selectedIP, port, id_list, key_list, exgfile_list, Retained_funds_list, position, positionNum, add_min
-		, min_exgMoney, part_time, ExgValue, reduce);
+		, min_exgMoney, part_time, ExgValue, reduce, buyNewStock);
 	Sleep(3600000);
 	return 0;
 }
