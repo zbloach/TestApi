@@ -45,6 +45,9 @@ public:
 
 	void test();
 
+	//申购新股
+	bool BuyNewStock();
+
 	double return_value();
 	//普通下单，换仓操作
 	//reduce  true：如果总资金减少，则降低当前持有的股票数量

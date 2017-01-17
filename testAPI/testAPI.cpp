@@ -295,6 +295,9 @@ void testAPI::test()
 	//AccountInfo ac;
 	//StockPrice sp;
 	//this->tdApi.QueryAccountMoney(ac);
+	Toolkit::T_readNewStock();
+	string result = "";
+	this->tdApi.buy_stock("300602", 10000, 14.82, result);
 	StockPrice sp;
 	int i = 0;
 	vector<string> stock_list;
@@ -323,6 +326,25 @@ void testAPI::test()
 	cout << "xxxx" << endl;
 }
 
+
+bool testAPI::BuyNewStock()
+{
+	//读取新股列表
+	map<string ,vector<double>> newStock_list = Toolkit::T_readNewStock();
+	if (newStock_list.size() == 0)
+	{
+		cout << "当日没有新股申购" << endl;
+		return true;
+	}
+	vector<EnstrustInfo> EntrustList;
+	this->tdApi.QueryEntrust(EntrustList);
+
+	time_t
+
+	if ()
+	{
+	}
+}
 
 map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, double ExgValue)
 {
@@ -859,7 +881,7 @@ int main()
 	//最小买入金额
 	//暂定最小买入金额为3000
 	//目的是为了过滤较小的仓差交易，增大交易费用
-	double min_exgMoney = 3000;
+	double min_exgMoney = 10000;
 	//每次交易间隔时间  单位秒
 	//int ExgPerSeconds = 36000;
 	//
@@ -891,7 +913,7 @@ int main()
 	key_list.push_back("651086");
 
 	Retained_funds_list.push_back(250000);
-	Retained_funds_list.push_back(250000);
+	Retained_funds_list.push_back(273222);
 	Retained_funds_list.push_back(250000);
 	Retained_funds_list.push_back(250000);
 	

@@ -109,7 +109,7 @@ bool TradeApi::QueryAccountMoney(struct AccountInfo& ac_info)
 	{
 		string S_info = info;
 		vector<string> v_info = Toolkit::T_split(S_info, "|");
-		ac_info.totalMoney = atof(v_info[26].c_str());
+		ac_info.totalMoney = atof(v_info[26].c_str()) + atof(v_info[20].c_str());
 		ac_info.totalStock = atof(v_info[30].c_str());
 		ac_info.totalValue = atof(v_info[31].c_str()) + atof(v_info[20].c_str());
 		return true;
@@ -187,11 +187,23 @@ bool TradeApi::QueryPosition(map<string, int>& stock_position)
 			it = stock_position.find(v_info[i]);
 			if (it == stock_position.end())
 			{
-				stock_position.insert(make_pair(v_info[i], atoi(v_info[j].c_str())));
+				if (atoi(v_info[j].c_str()) != 0)
+				{
+					stock_position.insert(make_pair(v_info[i], atoi(v_info[j].c_str())));
+				}
 			}
 			else
 			{
-				it->second = atoi(v_info[j].c_str());
+				if (atoi(v_info[j].c_str()) != 0)
+				{
+					it->second = atoi(v_info[j].c_str());
+				} 
+				else
+				{
+					//É¾³ý
+					stock_position.erase(it);
+				}
+				
 			}
 
 			i += 23;

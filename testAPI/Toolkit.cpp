@@ -158,3 +158,65 @@ std::string Toolkit::T_selectIp(vector<string> v_ip)
 	}
 	return selectedIp;
 }
+
+map<string, vector<double>> Toolkit::T_readNewStock()
+{
+	map<string, vector<double>> result;
+	string net_address = "http://stock.stockstar.com/ipo/";
+	static DataApi dataApi;
+	string context = dataApi.readData_tx(net_address);
+	string temp_str = ">ĞÂ¹Éµµ°¸<";
+
+	context = T_cut_after(context, temp_str,false);
+	temp_str = "align=\"center\"><span class=\"red_color\">";
+	
+	do 
+	{
+		string code = T_getContext(context, "\"red_color\">", "</span>");
+		int num = atof(T_getContext(context, "\"right\">", "</td>").c_str()) * 10000;
+		context = T_cut_after(context, "\"right\">",false);
+		double price = atof(T_getContext(context, "\"right\">", "</td>").c_str());
+		vector<double> temp_vec;
+		temp_vec.push_back(num);
+		temp_vec.push_back(price);
+		result.insert(make_pair(code, temp_vec));
+
+		context = T_cut_after(context, temp_str, true);
+	} while (context.length() != 0);
+	
+	return result;
+}
+
+std::string Toolkit::T_cut_after(string str_0, string str_sub,bool contern)
+{
+	int re_in = str_0.find(str_sub);
+	if (re_in == -1)
+	{
+		return "";
+	}
+	if (contern)
+	{
+		return str_0.substr(re_in);
+	}
+	else
+	{
+		return str_0.substr(re_in + str_sub.length());
+	}
+	 
+}
+
+std::string Toolkit::T_cut_before(string str_0, string str_sub)
+{
+	int re_in = str_0.find(str_sub);
+	if (re_in == -1)
+	{
+		return "";
+	}
+	return str_0.substr(0, re_in);
+}
+
+std::string Toolkit::T_getContext(string str_0, string start_str, string end_str)
+{
+	string str_1 = T_cut_after(str_0, start_str,false);
+	return T_cut_before(str_1, end_str);
+}
