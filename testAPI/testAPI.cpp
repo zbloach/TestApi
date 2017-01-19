@@ -904,9 +904,11 @@ int main()
 	cout << "单账户占用交易时间份数(1==》所有交易时间，0.5==》一半时间)：" << endl;
 	double part_time = 1;
 	cin >> part_time;
+	/*
 	cout << "是否申购新股(1,申购，0,不申购)" << endl;
 	int buyNew = 0;
 	cin >> buyNew;
+	*/
 	//交易仓位
 	double position = 1;
 	cout << "持仓股票数目：" << positionNum << endl;
@@ -941,10 +943,12 @@ int main()
 	exgfile_list.push_back("D:\\ExgFile\\10_ExgFile_zjj.txt");
 
 	bool buyNewStock = false;
+	/*
 	if (buyNew == 1)
 	{
 		buyNewStock = true;
 	}
+	*/
 	testAPI tapi;
 	bool reduce = true;
 	tapi.init_exg(selectedIP, port, id_list, key_list, exgfile_list, Retained_funds_list, position, positionNum, add_min
