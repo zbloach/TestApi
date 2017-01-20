@@ -187,7 +187,8 @@ bool TradeApi::QueryPosition(map<string, int>& stock_position)
 			it = stock_position.find(v_info[i]);
 			if (it == stock_position.end())
 			{
-				if (atoi(v_info[j].c_str()) != 0)
+				//抛开没有持仓的股票   还有新股
+				if (atoi(v_info[j].c_str()) != 0 && atoi(v_info[j].c_str()) != 1000 && atoi(v_info[j].c_str()) != 500)
 				{
 					stock_position.insert(make_pair(v_info[i], atoi(v_info[j].c_str())));
 				}
