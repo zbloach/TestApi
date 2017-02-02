@@ -545,7 +545,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 						cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 						cout << "第" << ser_num << "次卖出:" << sell_iter->first << "  " << not_exg_num << " 股" << endl;
 						//9代表买5位置，0代表的价格，1代表数量
-						//tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
+						tdApi.sell_stock(sell_iter->first, not_exg_num, sp.v_prices[9][0], vtbh);
 					}
 					//下一只股票
 					sell_iter++;
@@ -571,7 +571,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 						cout << "时间： " << tm_temp->tm_hour << ":" << tm_temp->tm_min << ":" << tm_temp->tm_sec << endl;
 						cout << "第" << ser_num << "次买入:" << buy_iter->first << "  " << not_exg_num << " 股" << endl;
 						//0代表卖5位置，0代表的价格，1代表数量
-						//tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
+						tdApi.buy_stock(buy_iter->first, not_exg_num, sp.v_prices[0][0], vtbh);
 					}
 					//下一只股票
 					buy_iter++;
