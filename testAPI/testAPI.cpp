@@ -972,7 +972,7 @@ int main()
 	}
 	*/
 	testAPI tapi;
-	bool reduce = true;
+	bool reduce = false;
 	tapi.init_exg(selectedIP, port, id_list, key_list, exgfile_list, Retained_funds_list, position, positionNum, add_min
 		, min_exgMoney, part_time, ExgValue, reduce, buyNewStock);
 	Sleep(3600000);
