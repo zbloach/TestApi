@@ -129,7 +129,8 @@ bool testAPI::ComputeBuyStockNum(double retainedf, double position, int position
 	return false;
 }
 
-bool testAPI::ComputeFitStockNum(double retainedf, double position, int positionNum, map<string, int>& fit_map, int& deriction, double min_exgMoney)
+bool testAPI::ComputeFitStockNum(double retainedf, double position, int positionNum, map<string, int>& fit_map, int& deriction, double min_exgMoney,vector<string> sell_list
+	,vector<string> buy_list)
 {
 	//记录最新价格信息
 	//map<string, double> map_sp;
@@ -154,6 +155,27 @@ bool testAPI::ComputeFitStockNum(double retainedf, double position, int position
 
 		map<string, int> position_map;
 		tdApi.QueryPosition(position_map);
+		//抛开即将或者正在抛售的股票
+		for (int j = 0; j < sell_list.size();j++)
+		{
+			map<string, int>::iterator iter = position_map.find(sell_list[j]);
+			if (iter != position_map.end())
+			{
+				position_map.erase(iter);
+			}
+			
+		}
+		for (int j = 0; j < buy_list.size(); j++)
+		{
+			map<string, int>::iterator iter = position_map.find(buy_list[j]);
+			if (iter != position_map.end())
+			{
+				position_map.erase(iter);
+			}
+
+		}
+
+
 		map<string, int>::iterator map_iter;
 		for (map_iter = position_map.begin(); map_iter != position_map.end(); map_iter++)
 		{
@@ -649,7 +671,7 @@ int testAPI::init_exg(string ip, int port, vector<string> id_list, vector<string
 			{
 				int deriction = 0;
 				map<string, int> m_fit_list, m_tofit_list;
-				this->ComputeFitStockNum(Retained_funds, position, positionNum, m_fit_list, deriction,min_exgMoney);
+				this->ComputeFitStockNum(Retained_funds, position, positionNum, m_fit_list, deriction, min_exgMoney, sell_list_1,buy_list_1);
 				if (deriction != 0)
 				{
 					this->ComputeExgToFitStockNum(deriction, m_fit_list, m_tofit_list, min_exgMoney);
@@ -903,7 +925,7 @@ int main()
 	int add_min = 4;
 	cout << "单账户占用交易时间份数(1==》所有交易时间，0.5==》一半时间)：" << endl;
 	double part_time = 1;
-	cin >> part_time;
+	//cin >> part_time;
 	/*
 	cout << "是否申购新股(1,申购，0,不申购)" << endl;
 	int buyNew = 0;

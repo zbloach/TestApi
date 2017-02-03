@@ -26,7 +26,9 @@ public:
 	bool ComputeSellStockNum(vector<string> v_sell_list,map<string,int>& m_sell_list);
 	//计算各个持仓根据最新资金情况应有的数量
 	//deriction 1 适宜的数量大于当前数量，-1 适宜的数量小于当前数量,0 不需要任何变动
-	bool ComputeFitStockNum(double retainedf, double position, int positionNum, map<string, int>& fit_map, int& deriction,double min_exgMoney);
+	//抛开即将或者正在抛售的股票
+	//考虑即将或者正在买入的股票市值
+	bool ComputeFitStockNum(double retainedf, double position, int positionNum, map<string, int>& fit_map, int& deriction,double min_exgMoney,vector<string> sell_list,vector<string> buy_list);
 	//计算应该调整的股票数量
 	bool ComputeExgToFitStockNum(int deriction, map<string, int> fit_map, map<string, int>& toFit_map, double min_exgMoney);
 	//合并买入或者卖出列表
