@@ -956,7 +956,7 @@ int main()
 
 	Retained_funds_list.push_back(250000);
 	Retained_funds_list.push_back(273222);
-	Retained_funds_list.push_back(250000);
+	Retained_funds_list.push_back(252320);
 	Retained_funds_list.push_back(250000);
 	
 	exgfile_list.push_back("D:\\ExgFile\\1_ExgFile_zyj.txt");
