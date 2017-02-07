@@ -51,6 +51,8 @@ public:
 	bool get_price(string stock_id, StockPrice& stockprice);
 	//腾讯获取盘口五档价格
 	bool get_price_tx(string stock_id, StockPrice& stockprice);
+	//新浪获取盘口五档价格
+	bool get_price_sina(string stock_id, StockPrice& stockprice);
 	//返回错误信息
 
 	//const ErrorMessage& LastError() const;

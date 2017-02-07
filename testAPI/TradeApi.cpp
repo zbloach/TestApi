@@ -666,5 +666,85 @@ bool TradeApi::get_price_tx(string stock_id, StockPrice& stockprice)
 	return true;
 }
 
+bool TradeApi::get_price_sina(string stock_id, StockPrice& stockprice)
+{
+	//cout << "获取" << stock_id << "价格数据" << endl;
+	vector<vector<double>> v_prices0;
+	stockprice = { "", 0, 0, 0, v_prices0 };
+	string S_info = "";
+	int error_num = 0, sleeptime = 0;
+	vector<string> v_info;
+
+	string stock_market = "";
+	int market_code = Toolkit::T_stockMarket(stock_id);
+	if (market_code == 1)
+	{
+		stock_market = "sh";
+	}
+	else
+		if (market_code == 0)
+			stock_market = "sz";
+		else
+		{
+			cout << "无法判断股票市场归属" << endl;
+			return false;
+		}
+
+	DataApi dataApi;
+	string net_address = "http://hq.sinajs.cn/list=" + stock_market + stock_id;
+	S_info = dataApi.readData_sina(net_address);
+	v_info = Toolkit::T_split(S_info, ",");
+
+	vector<double> v_price;
+
+	//清空价格向量元素
+	v_price.clear();
+	//价格排列顺序：卖五——卖一，买一——买五
+	v_price.push_back(atof(v_info[29].c_str()));
+	v_price.push_back(atof(v_info[28].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[27].c_str()));
+	v_price.push_back(atof(v_info[26].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[25].c_str()));
+	v_price.push_back(atof(v_info[24].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[23].c_str()));
+	v_price.push_back(atof(v_info[22].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[21].c_str()));
+	v_price.push_back(atof(v_info[20].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[11].c_str()));
+	v_price.push_back(atof(v_info[10].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[13].c_str()));
+	v_price.push_back(atof(v_info[12].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[15].c_str()));
+	v_price.push_back(atof(v_info[14].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[17].c_str()));
+	v_price.push_back(atof(v_info[16].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	v_price.clear();
+	v_price.push_back(atof(v_info[19].c_str()));
+	v_price.push_back(atof(v_info[18].c_str()));
+	stockprice.v_prices.push_back(v_price);
+	stockprice.stockid = stock_id;
+	stockprice.LastClose = atof(v_info[2].c_str());
+	stockprice.TodayOpen = atof(v_info[1].c_str());
+	stockprice.NewPrice = atof(v_info[3].c_str());
+	return true;
+}
+
 
 

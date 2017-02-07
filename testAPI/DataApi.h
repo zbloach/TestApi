@@ -9,4 +9,5 @@ using namespace std;
 class DataApi{
 public:
 	string readData_tx(string netAddress);
+	string readData_sina(string netAddress);
 };

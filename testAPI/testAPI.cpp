@@ -79,7 +79,7 @@ bool testAPI::ComputeBuyStockNum(double retainedf, double position, int position
 		double price;
 		while (i < v_buy_list.size())
 		{
-			if (!tdApi.get_price_tx(v_buy_list[i], sp))
+			if (!tdApi.get_price_sina(v_buy_list[i], sp))
 			{
 				return false;
 			}
@@ -179,7 +179,7 @@ bool testAPI::ComputeFitStockNum(double retainedf, double position, int position
 		map<string, int>::iterator map_iter;
 		for (map_iter = position_map.begin(); map_iter != position_map.end(); map_iter++)
 		{
-			if (!tdApi.get_price_tx(map_iter->first, sp))
+			if (!tdApi.get_price_sina(map_iter->first, sp))
 			{
 				return false;
 			}
@@ -225,7 +225,7 @@ bool testAPI::ComputeExgToFitStockNum(int deriction, map<string, int> fit_map, m
 		{
 			iter_temp = fit_map.find(iter->first);
 			StockPrice sp;
-			tdApi.get_price_tx(iter->first, sp);
+			tdApi.get_price_sina(iter->first, sp);
 			int exg_num = iter_temp->second - iter->second;
 			if (sp.NewPrice * exg_num > min_exgMoney)
 			{
@@ -242,7 +242,7 @@ bool testAPI::ComputeExgToFitStockNum(int deriction, map<string, int> fit_map, m
 			{
 				iter_temp = fit_map.find(iter->first);
 				StockPrice sp;
-				tdApi.get_price_tx(iter->first, sp);
+				tdApi.get_price_sina(iter->first, sp);
 				int exg_num = iter->second - iter_temp->second;
 				if (sp.NewPrice * exg_num > min_exgMoney)
 				{
@@ -393,7 +393,7 @@ map<string, vector<int>> testAPI::ComputeBuyPerMin(map<string, int> m_buy_list, 
 		int exg_num;
 		for (iter; iter != m_buy_list.end(); iter++)
 		{
-			if (!tdApi.get_price_tx(iter->first, sp))
+			if (!tdApi.get_price_sina(iter->first, sp))
 			{
 				m_buy_vector.clear();
 				return m_buy_vector;
@@ -444,7 +444,7 @@ map<string, vector<int>> testAPI::ComputeSellPerMin(map<string, int> m_sell_list
 		map<string, int>::iterator iter = m_sell_list.begin();
 		for (iter; iter != m_sell_list.end(); iter++)
 		{
-			if (!tdApi.get_price_tx(iter->first, sp))
+			if (!tdApi.get_price_sina(iter->first, sp))
 			{
 				m_sell_vector.clear();
 				return m_sell_vector;
@@ -556,7 +556,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 						not_exg_num = sell_iter->second[ser_num];
 						error_time = 0;
 						//获取价格
-						if (!tdApi.get_price_tx(sell_iter->first, sp))
+						if (!tdApi.get_price_sina(sell_iter->first, sp))
 						{
 							Sleep(3600000);
 							return false;
@@ -582,7 +582,7 @@ bool testAPI::ExgPerMin(int perSeconds, int ExgValue, map<string, vector<int>> b
 						not_exg_num = buy_iter->second[ser_num];
 						error_time = 0;
 
-						if (!tdApi.get_price_tx(buy_iter->first, sp))
+						if (!tdApi.get_price_sina(buy_iter->first, sp))
 						{
 							Sleep(3600000);
 							return false;
@@ -641,7 +641,7 @@ int testAPI::init_exg(string ip, int port, vector<string> id_list, vector<string
 	//获取hs300指数的最新价格
 	TradeApi tradeapi_0;
 	StockPrice sp;
-	tradeapi_0.get_price_tx("000300", sp);
+	tradeapi_0.get_price_sina("000300", sp);
 	fileout << sp.NewPrice << endl;
 
 	vector<double> money_list;
